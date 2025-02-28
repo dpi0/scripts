@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+#url="https://bin.wantguns.dev"
+url="https://bin.dpi0.cloud"
+filepath="$1"
+filename=$(basename -- "$filepath")
+extension="${filename##*.}"
+
+# Upload the file
+response=$(curl --data-binary @${filepath:-/dev/stdin} --url $url)
+
+# Construct the full URL
+full_url="$url/p$response.$extension"
+
+# Copy the URL to the clipboard
+echo "$full_url" | tee >(wl-copy)
+
+# Send a dunst notification
+notify-send -i "✅ Upload Successful" "URL copied to clipboard: $full_url"

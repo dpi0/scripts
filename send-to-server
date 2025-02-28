@@ -1,0 +1,71 @@
+#!/bin/bash
+
+# Default values
+PORT=3333
+KEY="$HOME/.ssh/home-server"
+USER="user"
+ADDRESS="192.168.1.333"
+
+# Function to display help
+show_help() {
+    echo "Usage: send-to-server [options] -s <source> -d <destination>"
+    echo "Options:"
+    echo "  -p, --port          SSH port (default: 3333)"
+    echo "  -i, --key           Path to SSH private key (default: $HOME/.ssh/home-server)"
+    echo "  -u, --user          SSH user (default: user)"
+    echo "  -a, --address       Server address (default: 192.168.1.333)"
+    echo "  -s, --source        Source file(s) or directory (required, can be multiple)"
+    echo "  -d, --destination   Destination directory on the server (required)"
+    echo "  -h, --help          Display this help message"
+}
+
+# Parse command line arguments
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        -p|--port) PORT="$2"; shift ;;
+        -i|--key) KEY="$2"; shift ;;
+        -u|--user) USER="$2"; shift ;;
+        -a|--address) ADDRESS="$2"; shift ;;
+        -s|--source) 
+            while [[ "$2" != -* && "$2" != "" ]]; do
+                SOURCE+=("$2")
+                shift
+            done
+            ;;
+        -d|--destination) DESTINATION="$2"; shift ;;
+        -h|--help) show_help; exit 0 ;;
+        *) echo "Unknown parameter passed: $1"; show_help; exit 1 ;;
+    esac
+    shift
+done
+
+# Check for required arguments
+if [[ ${#SOURCE[@]} -eq 0 ]]; then
+    echo "Error: Source (-s) is required."
+    show_help
+    exit 1
+fi
+
+if [[ -z "$DESTINATION" ]]; then
+    echo "Error: Destination (-d) is required."
+    show_help
+    exit 1
+fi
+
+# Construct the rsync command
+rsync_command="rsync -havz --progress -e 'ssh -p $PORT -i $KEY'"
+for src in "${SOURCE[@]}"; do
+    rsync_command+=" '$src'"
+done
+rsync_command+=" '$USER@$ADDRESS:$DESTINATION'"
+
+# Execute the rsync command
+eval $rsync_command
+
+# Check if rsync was successful
+if [[ $? -eq 0 ]]; then
+    echo "Files successfully sent to server."
+else
+    echo "Failed to send files to server."
+    exit 1
+fi

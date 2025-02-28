@@ -1,0 +1,117 @@
+#!/bin/bash
+
+# Global variables
+declare -A DIRECTORIES=(
+    ["note"]="$HOME/Notes/docs"
+    ["script"]="$HOME/.dotfiles/scripts"
+    ["daily"]="$HOME/dev/more/dailydiary/content/daily/"
+)
+
+# Default editor
+EDITOR="nvim"
+
+# Function to display help menu
+function show_help() {
+    echo "Usage: create [OPTION]... [TYPE] [FILE]"
+    echo "Create a file in a specified directory."
+    echo
+    echo "Options:"
+    echo "  -d, --directory DIRECTORY  Specify a custom directory"
+    echo "  -h, --help                 Display this help and exit"
+    echo
+    echo "Predefined types:"
+    echo "  note                       Directory: $HOME/Notes/docs"
+    echo "  script                     Directory: $HOME/.dotfiles/scripts"
+    echo "  daily                     Directory: $HOME/dev/more/dailydiary/content/daily"
+    echo
+    echo "Examples:"
+    echo "  create note test/test-note.md"
+    echo "  create --directory $HOME/zsh/scripts another-test/test.sh"
+    echo
+}
+
+# Function to handle errors
+function handle_error() {
+    echo "Error: $1" >&2
+    exit 1
+}
+
+# Function to display messages
+function msg() {
+    echo "$1"
+}
+
+# Function to create or open a file
+function create_or_open_file() {
+    local dir=$1
+    local file=$2
+
+    # Ensure the directory exists
+    mkdir -p "$(dirname "$dir/$file")" || handle_error "Failed to create directory $(dirname "$dir/$file")"
+
+    local full_path="$dir/$file"
+
+    # Check if the file already exists
+    if [[ -f "$full_path" ]]; then
+        msg "File already exists. Opening $full_path"
+    else
+        touch "$full_path" || handle_error "Failed to create file $full_path"
+        msg "Created $full_path"
+    fi
+
+    # Open the file in the default editor
+    $EDITOR "$full_path"
+}
+
+# Main function
+function main() {
+    local dir=""
+    local file=""
+    local custom_dir=""
+
+    # Parse options
+    while [[ "$#" -gt 0 ]]; do
+        case $1 in
+            -d|--directory)
+                custom_dir="$2"
+                shift 2
+                ;;
+            -h|--help)
+                show_help
+                exit 0
+                ;;
+            *)
+                if [[ -z "$dir" ]]; then
+                    dir="$1"
+                elif [[ -z "$file" ]]; then
+                    file="$1"
+                else
+                    handle_error "Too many arguments"
+                fi
+                shift
+                ;;
+        esac
+    done
+
+    # Validate input
+    if [[ -z "$file" ]]; then
+        handle_error "Missing arguments. Use -h for help."
+    fi
+
+    # Determine the directory
+    if [[ -n "$custom_dir" ]]; then
+        dir="$custom_dir"
+    else
+        if [[ -n "${DIRECTORIES[$dir]}" ]]; then
+            dir="${DIRECTORIES[$dir]}"
+        else
+            handle_error "Unknown type: $dir. Use -h for help."
+        fi
+    fi
+
+    # Create or open the file
+    create_or_open_file "$dir" "$file"
+}
+
+# Execute the main function
+main "$@"
