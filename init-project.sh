@@ -39,7 +39,7 @@ create_license() {
   if [ -f "LICENSE" ]; then
     echo "LICENSE file already exists. Skipping."
   else
-    curl -s https://bin.dpi0.cloud/BaTDwU > LICENSE || handle_error $? "Failed to download LICENSE file"
+    curl -fsSL https://bin.dpi0.cloud/license > LICENSE || handle_error $? "Failed to download LICENSE file"
   fi
 }
 
@@ -76,9 +76,12 @@ INCLUDE_CODE_OF_CONDUCT=false
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    -h|--help) display_help ;;
-    -cc|--code-of-conduct) INCLUDE_CODE_OF_CONDUCT=true ;;
-    *) echo "Unknown parameter passed: $1"; exit 1 ;;
+    -h | --help) display_help ;;
+    -cc | --code-of-conduct) INCLUDE_CODE_OF_CONDUCT=true ;;
+    *)
+      echo "Unknown parameter passed: $1"
+      exit 1
+      ;;
   esac
   shift
 done
