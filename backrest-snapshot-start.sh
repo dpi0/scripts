@@ -2,7 +2,7 @@
 
 NOTIFY_URL="https://notify.dpi0.cloud/message?token=A3STeeMYgy3k401"
 NOTIFY_TITLE="🛖 Arch Home Snapshot Start"
-NOTIFY_MESSAGE="🟥 Stopping docker containers for backup. ARCH containers may be temporarily unavailable."
+NOTIFY_MESSAGE="🟥 Stopping docker containers for backup."
 
 # Function to notify via webhook
 notify() {
