@@ -1,19 +1,49 @@
 #!/usr/bin/env bash
 
-#url="https://bin.wantguns.dev"
+# Upload server URL
 url="https://bin.dpi0.cloud"
+
+# Get file path from arguments
 filepath="$1"
+
+# Ensure a file is provided
+if [[ -z "$filepath" ]]; then
+  echo "Error: No file provided."
+  echo "Usage: $0 /path/to/file"
+  exit 1
+fi
+
+# Ensure the file exists
+if [[ ! -f "$filepath" ]]; then
+  echo "Error: File not found: $filepath"
+  exit 1
+fi
+
+# Extract filename and extension
 filename=$(basename -- "$filepath")
 extension="${filename##*.}"
 
-# Upload the file
-response=$(curl --data-binary @${filepath:-/dev/stdin} --url $url)
+# Upload the file (handle spaces correctly)
+response=$(curl --silent --fail --show-error --data-binary @"$filepath" --url "$url")
+
+# Check if curl succeeded
+if [[ -z "$response" || "$response" == *"error"* ]]; then
+  echo "Error: Upload failed."
+  exit 1
+fi
 
 # Construct the full URL
 full_url="$url/p$response.$extension"
 
-# Copy the URL to the clipboard
-echo "$full_url" | tee >(wl-copy)
+# Copy the URL to the clipboard (if wl-copy is available)
+if command -v wl-copy &> /dev/null; then
+  echo "$full_url" | wl-copy
+fi
 
-# Send a dunst notification
-notify-send -i "✅ Upload Successful" "URL copied to clipboard: $full_url"
+# Display notification (if notify-send is available)
+if command -v notify-send &> /dev/null; then
+  notify-send -i "✅ Upload Successful" "URL copied to clipboard: $full_url"
+fi
+
+# Print the URL
+echo "$full_url"
