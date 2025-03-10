@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 # Global variables
-SCRIPT_DIR="$HOME/scripts"
+SCRIPT_DIR="/home/dpi0/scripts"
 COMMIT_SCRIPT="$SCRIPT_DIR/commit-dir.sh"
 
 REPOS=(
-  "$HOME/.dotfiles"
-  "$HOME/scripts"
-  "$HOME/sh"
+  "/home/dpi0/.dotfiles"
+  "/home/dpi0/scripts"
+  "/home/dpi0/sh"
 )
 
 # Execute commit script for each directory
