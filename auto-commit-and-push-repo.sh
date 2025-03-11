@@ -7,7 +7,7 @@ COMMIT_SCRIPT="$SCRIPT_DIR/commit-dir.sh"
 REPOS=(
   "/home/dpi0/.dotfiles"
   "/home/dpi0/scripts"
-  "/home/dpi0/sh"
+  # "/home/dpi0/sh"
 )
 
 # Execute commit script for each directory
