@@ -1,49 +1,35 @@
 #!/usr/bin/env bash
 
-# Upload server URL
-url="https://bin.dpi0.cloud"
-
-# Get file path from arguments
-filepath="$1"
+# Global variables
+UPLOAD_URL="https://bin.dpi0.cloud"
+FILEPATH="$1"
 
 # Ensure a file is provided
-if [[ -z "$filepath" ]]; then
-  echo "Error: No file provided."
+if [[ -z "$FILEPATH" || ! -f "$FILEPATH" ]]; then
+  echo "Error: Valid file required."
   echo "Usage: $0 /path/to/file"
   exit 1
 fi
 
-# Ensure the file exists
-if [[ ! -f "$filepath" ]]; then
-  echo "Error: File not found: $filepath"
-  exit 1
-fi
-
 # Extract filename and extension
-filename=$(basename -- "$filepath")
-extension="${filename##*.}"
+FILENAME="$(basename -- "$FILEPATH")"
+EXTENSION="${FILENAME##*.}"
 
-# Upload the file (handle spaces correctly)
-response=$(curl --silent --fail --show-error --data-binary @"$filepath" --url "$url")
-
-# Check if curl succeeded
-if [[ -z "$response" || "$response" == *"error"* ]]; then
+# Upload file
+RESPONSE=$(curl --silent --fail --show-error --data-binary @"$FILEPATH" --url "$UPLOAD_URL")
+[[ -z "$RESPONSE" || "$RESPONSE" == *"error"* ]] && {
   echo "Error: Upload failed."
   exit 1
-fi
+}
 
-# Construct the full URL
-full_url="$url/p$response.$extension"
+# Construct file URL
+FILE_URL="$UPLOAD_URL/p$RESPONSE.$EXTENSION"
 
-# Copy the URL to the clipboard (if wl-copy is available)
-if command -v wl-copy &> /dev/null; then
-  echo "$full_url" | wl-copy
-fi
+# Copy URL to clipboard if available
+command -v wl-copy &> /dev/null && echo "$FILE_URL" | wl-copy
 
-# Display notification (if notify-send is available)
-if command -v notify-send &> /dev/null; then
-  notify-send -i "✅ Upload Successful" "URL copied to clipboard: $full_url"
-fi
+# Show notification if available
+command -v notify-send &> /dev/null && notify-send "✅ Upload Successful" "URL copied: $FILE_URL"
 
-# Print the URL
-echo "$full_url"
+# Output URL
+echo "$FILE_URL"
