@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Set the backup directory
-BACKUP_DIR="$HOME/.dotfiles"
+BACKUP_DIR="$HOME/.dotfiles/pkgs"
 
 # Ensure the backup directory exists
 mkdir -p "$BACKUP_DIR"

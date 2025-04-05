@@ -1,51 +1,63 @@
 #!/bin/bash
 
 # Default values
-URL="https://notify.dpi0.cloud"
+URL="${NOTIFY_APP_URL}"
 MESSAGE="No Message"
 PRIORITY=0
 
 # Function to display help
 usage() {
-    echo "Usage: $0 --token TOKEN -t|--title TITLE [-m|--message MESSAGE] [-p|--priority PRIORITY]"
-    echo "Options:"
-    echo "  --token TOKEN       Required: Authentication token."
-    echo "  -t, --title TITLE   Required: Title of the notification."
-    echo "  -m, --message MSG   Optional: Message content (default is blank)."
-    echo "  -p, --priority PR   Optional: Priority level (default is 0)."
-    exit 1
+  echo "Usage: $0 --token TOKEN -t|--title TITLE [-m|--message MESSAGE] [-p|--priority PRIORITY]"
+  echo "Options:"
+  echo "  --token TOKEN       Required: Authentication token."
+  echo "  -t, --title TITLE   Required: Title of the notification."
+  echo "  -m, --message MSG   Optional: Message content (default is blank)."
+  echo "  -p, --priority PR   Optional: Priority level (default is 0)."
+  exit 1
 }
 
 # Parse command line arguments
 while [[ "$#" -gt 0 ]]; do
-    case $1 in
-        --token) TOKEN="$2"; shift ;;
-        -t|--title) TITLE="$2"; shift ;;
-        -m|--message) MESSAGE="$2"; shift ;;
-        -p|--priority) PRIORITY="$2"; shift ;;
-        *) usage ;;
-    esac
-    shift
+  case $1 in
+    --token)
+      TOKEN="$2"
+      shift
+      ;;
+    -t | --title)
+      TITLE="$2"
+      shift
+      ;;
+    -m | --message)
+      MESSAGE="$2"
+      shift
+      ;;
+    -p | --priority)
+      PRIORITY="$2"
+      shift
+      ;;
+    *) usage ;;
+  esac
+  shift
 done
 
 # Check if required arguments are provided
 if [ -z "$TOKEN" ] || [ -z "$TITLE" ]; then
-    echo "Error: --token and --title are required."
-    usage
+  echo "Error: --token and --title are required."
+  usage
 fi
 
 # Function to send notification
 send_notification() {
-    curl -s -o /dev/null -X POST "$URL/message?token=$TOKEN" \
-        -F "title=$TITLE" \
-        -F "message=$MESSAGE" \
-        -F "priority=$PRIORITY"
+  curl -s -o /dev/null -X POST "$URL/message?token=$TOKEN" \
+    -F "title=$TITLE" \
+    -F "message=$MESSAGE" \
+    -F "priority=$PRIORITY"
 
-    if [ $? -eq 0 ]; then
-        echo "Notification sent successfully."
-    else
-        echo "Failed to send notification."
-    fi
+  if [ $? -eq 0 ]; then
+    echo "Notification sent successfully."
+  else
+    echo "Failed to send notification."
+  fi
 }
 
 # Call the function to send notification

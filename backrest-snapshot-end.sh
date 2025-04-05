@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 
-NOTIFY_URL="https://notify.dpi0.cloud/message?token=A3STeeMYgy3k401"
+ENV_FILE="${PWD}/.env"
+
+if [[ -f "$ENV_FILE" ]]; then
+  export $(grep -E '^[A-Za-z_][A-Za-z0-9_]*=' "$ENV_FILE" | xargs -d '\n')
+else
+  echo "Error: Environment file not found at $ENV_FILE" >&2
+  exit 1
+fi
+
+NOTIFY_URL="${NOTIFY_APP_URL}/message?token=${NOTIFY_BACKREST_TOKEN}"
 NOTIFY_TITLE="🛖 Arch Home Snapshot End"
 NOTIFY_MESSAGE="🟩 Restarting docker containers."
 

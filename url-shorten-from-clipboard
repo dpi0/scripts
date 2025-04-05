@@ -1,15 +1,16 @@
 #!/bin/bash
 
-# Load environment variables from .env file
-if [[ -f "$HOME/.dotfiles/scripts/.env" ]]; then
-    source "$HOME/.dotfiles/scripts/.env"
+ENV_FILE="${PWD}/.env"
+
+if [[ -f "$ENV_FILE" ]]; then
+  export $(grep -E '^[A-Za-z_][A-Za-z0-9_]*=' "$ENV_FILE" | xargs -d '\n')
 else
-    dunstify -u critical "Error" ".env file not found!"
-    exit 1
+  echo "Error: Environment file not found at $ENV_FILE" >&2
+  exit 1
 fi
 
 # Define the API endpoint
-API_ENDPOINT="https://u.dpi0.cloud/api/link/create"
+API_ENDPOINT="${U_APP_URL}/api/link/create"
 
 # Retrieve the URL from the clipboard
 clipboard_text=$(/usr/bin/wl-paste)
@@ -19,29 +20,29 @@ encoded_text=$(echo "$clipboard_text" | sed 's/ /+/g')
 
 # Check if the clipboard content is a valid URL
 if [[ $encoded_text =~ ^https?:// ]]; then
-    # Generate a random 6-character slug using openssl
-    SLUG=$(openssl rand -base64 6 | tr -dc 'a-zA-Z0-9' | head -c 6)
+  # Generate a random 6-character slug using openssl
+  SLUG=$(openssl rand -base64 6 | tr -dc 'a-zA-Z0-9' | head -c 6)
 
-    # Send the POST request
-    RESPONSE=$(curl -s -X POST "$API_ENDPOINT" \
-    -H "authorization: Bearer $BEARER_TOKEN" \
+  # Send the POST request
+  RESPONSE=$(curl -s -X POST "$API_ENDPOINT" \
+    -H "authorization: Bearer $U_BEARER_TOKEN" \
     -H "content-type: application/json" \
     -d "{
       \"url\": \"$encoded_text\",
       \"slug\": \"$SLUG\"
     }")
 
-    # Extract the shortLink from the JSON response
-    SHORT_LINK=$(echo "$RESPONSE" | grep -oP '"shortLink":"\K[^"]+')
+  # Extract the shortLink from the JSON response
+  SHORT_LINK=$(echo "$RESPONSE" | grep -oP '"shortLink":"\K[^"]+')
 
-    # Check if the shortLink was successfully extracted
-    if [[ -n $SHORT_LINK ]]; then
-        # Copy the shortLink to the clipboard WITHOUT a trailing newline
-        printf "%s" "$SHORT_LINK" | wl-copy
-        dunstify -u normal "Success!" "Shortened URL copied to clipboard: $SHORT_LINK"
-    else
-        dunstify -u critical "Error" "Failed to shorten the URL. Please try again."
-    fi
+  # Check if the shortLink was successfully extracted
+  if [[ -n $SHORT_LINK ]]; then
+    # Copy the shortLink to the clipboard WITHOUT a trailing newline
+    printf "%s" "$SHORT_LINK" | wl-copy
+    dunstify -u normal "Success!" "Shortened URL copied to clipboard: $SHORT_LINK"
+  else
+    dunstify -u critical "Error" "Failed to shorten the URL. Please try again."
+  fi
 else
-    dunstify -u critical "Error" "Clipboard does not contain a valid URL."
+  dunstify -u critical "Error" "Clipboard does not contain a valid URL."
 fi

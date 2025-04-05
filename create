@@ -2,7 +2,7 @@
 
 # Global variables
 declare -A DIRECTORIES=(
-  ["note"]="$HOME/Notes/docs"
+  ["note"]="$HOME/notes/docs"
   ["script"]="$HOME/scripts"
   ["daily"]="$HOME/dev/more/dailydiary/content/daily/"
 )
@@ -20,7 +20,7 @@ function show_help() {
   echo "  -h, --help                 Display this help and exit"
   echo
   echo "Predefined types:"
-  echo "  note                       Directory: $HOME/Notes/docs"
+  echo "  note                       Directory: $HOME/notes/docs"
   echo "  script                     Directory: $HOME/scripts"
   echo "  daily                     Directory: $HOME/dev/more/dailydiary/content/daily"
   echo
