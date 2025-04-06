@@ -58,6 +58,7 @@ install_manually() {
   echo "📥 Downloading $PKG $VERSION in $TMP_DIR via $DOWNLOAD_URL..."
   if ! curl -fsLo "$TMP_DIR/$ARCHIVE" "$DOWNLOAD_URL"; then
     echo "🟥 Error: Failed to download $PKG from $DOWNLOAD_URL" >&2
+    rm -rf "$TMP_DIR"
     exit 1
   fi
 
