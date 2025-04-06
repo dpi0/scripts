@@ -10,14 +10,12 @@ echo "                                                  "
 
 PKG="nvim"
 REPO="neovim/neovim"
-INSTALL_DIR_PATH="/opt"
+INSTALL_DIR="/opt"
 echo "🔍 Fetching latest version..."
 json=$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest")
 VERSION=$(echo "$json" | grep -m1 '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 ARCHIVE="${PKG}-linux-x86_64.tar.gz"
-EXTRACTED_DIR="${ARCHIVE%.tar.gz}"
 DOWNLOAD_URL="https://github.com/$REPO/releases/download/$VERSION/$ARCHIVE"
-TMP_DIR=$(mktemp -d)
 MY_REPO="https://github.com/dpi0/sh"
 CONFIG_DIR="$HOME/.config"
 PKG_CONFIG_DIR="$CONFIG_DIR/$PKG"
@@ -30,7 +28,6 @@ ALIASES=(
   "alias svim='sudo -E nvim'"
 )
 
-# Ensure $INSTALL_DIR_PATH exists
 mkdir -p "$CONFIG_DIR"
 
 install_dependencies() {
@@ -65,23 +62,20 @@ deploy_pkg_config() {
 }
 
 install_manually() {
-  echo "📥 Downloading $PKG $VERSION in $TMP_DIR via $DOWNLOAD_URL..."
-  if ! curl -fsLo "$TMP_DIR/$ARCHIVE" "$DOWNLOAD_URL"; then
-    echo "🟥 Error: Failed to download $PKG from $DOWNLOAD_URL" >&2
-    exit 1
-  fi
-
-  echo "📦 Extracting $ARCHIVE to $TMP_DIR..."
+  local TMP_DIR=$(mktemp -d)
+  echo "📥 Downloading $PKG $VERSION via $DOWNLOAD_URL..."
+  curl -fsSL --retry 3 --retry-delay 2 -o "$TMP_DIR/$ARCHIVE" "$DOWNLOAD_URL"
+  echo "📦 Extracting $ARCHIVE..."
   if ! tar -xzf "$TMP_DIR/$ARCHIVE" -C "$TMP_DIR"; then
-    echo "🟥 Error: Failed to extract $ARCHIVE" >&2
+    echo "❌ Extraction failed for $ARCHIVE"
     rm -rf "$TMP_DIR"
     exit 1
   fi
 
-  echo "🚀 Installing to $INSTALL_DIR_PATH..."
-
-  echo "🟨 Need superuser password to copy $TMP_DIR/nvim-linux-x86_64 to $INSTALL_DIR_PATH and symlink binary /opt/nvim-linux-x86_64/bin/nvim to /usr/local/bin/nvim"
-  sudo cp -r "$TMP_DIR/$EXTRACTED_DIR" "$INSTALL_DIR_PATH"
+  echo "🚀 Installing to $INSTALL_DIR..."
+  echo "🟨 Need superuser password to copy $TMP_DIR/nvim-linux-x86_64 to $INSTALL_DIR"
+  echo "🟨 and symlink binary /opt/nvim-linux-x86_64/bin/nvim to /usr/local/bin/nvim"
+  sudo cp -r "$TMP_DIR/${ARCHIVE%.tar.gz}" "$INSTALL_DIR"
   sudo ln -sf "/opt/nvim-linux-x86_64/bin/nvim" "/usr/local/bin/nvim"
 
   echo "🗑  Cleaning up..."
