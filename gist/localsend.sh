@@ -23,11 +23,10 @@ APP_GENERIC_NAME="File Share"
 mkdir -p "$APPLICATIONS_DIR" "$LOCAL_SHARE_APPLICATIONS_DIR"
 
 install_manually() {
-  local tmp_dir
-  tmp_dir=$(mktemp -d)
-  curl -fsLo "$tmp_dir/$APP" "$DOWNLOAD_URL"
-  cp "$tmp_dir/$APP" "$INSTALL_PATH"
-  rm -rf "$tmp_dir"
+  local TMP_DIR=$(mktemp -d)
+  curl -fsLo "$TMP_DIR/$APP" "$DOWNLOAD_URL"
+  cp "$TMP_DIR/$APP" "$INSTALL_PATH"
+  rm -rf "$TMP_DIR"
 }
 
 setup_desktop_entry() {

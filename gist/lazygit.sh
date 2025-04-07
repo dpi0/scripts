@@ -72,7 +72,7 @@ install_manually() {
     exit 1
   fi
   echo "🗑  Cleaning up..."
-  rm -rf "$tmp_dir"
+  rm -rf "$TMP_DIR"
 }
 
 backup_pkg_config

@@ -36,7 +36,7 @@ install_manually() {
     exit 1
   fi
   echo "🗑  Cleaning up..."
-  rm -rf "$tmp_dir"
+  rm -rf "$TMP_DIR"
 }
 
 if ! command -v $PKG &> /dev/null; then
