@@ -2,7 +2,7 @@
 // @name         Youtube Video's Published Date
 // @namespace    https://tampermonkey.net/
 // @version      1.0
-// @description  Show YouTube video's publishing date
+// @description  Show YouTube video's publishing date, best to have these 2 uBlock origin filters "www.youtube.com##span.yt-formatted-string.style-scope.bold:nth-of-type(3)" & "www.youtube.com###owner-sub-count"
 // @author       dpi0
 // @include      *://*youtube.com/*
 // @grant        none
