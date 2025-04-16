@@ -12,28 +12,33 @@
 // @license      MIT
 // ==/UserScript==
 
-(function() {
+(function () {
     'use strict';
 
     const observer = new MutationObserver(() => {
         const infoStrings = document.querySelector('#info-strings');
         const subCount = document.querySelector('#owner-sub-count');
-        if (infoStrings && subCount) {
-            observer.disconnect();
+        const channelName = document.querySelector('#channel-name');
 
-            // Move the publishing date below the sub count
+        if (infoStrings && subCount && channelName) {
+            observer.disconnect(); // Stop observing once elements are found
+
             infoStrings.remove();
-            subCount.after(infoStrings);
+            subCount.after(infoStrings); // Move publishing date below sub count
 
-            // Remove extra spans and apply styles
-            infoStrings.querySelectorAll('span').forEach(e => e.remove());
+            infoStrings.querySelectorAll('span').forEach(e => e.remove()); // Remove extra spans
 
-            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            infoStrings.style.fontSize = '15px';
-            infoStrings.style.fontWeight = '540';
-            infoStrings.style.color = isDark ? '#f1f1f1' : '#0f0f0f';
+            const computedStyle = window.getComputedStyle(channelName);
+            const originalSize = parseFloat(computedStyle.fontSize); // Extract numeric font size
+            const fontUnit = computedStyle.fontSize.replace(/[0-9.]/g, '') || 'px'; // Extract unit
+            const reducedSize = `${originalSize * 0.9}${fontUnit}`; // 90% of channel name size
+
+            infoStrings.style.fontSize = reducedSize;
+            infoStrings.style.fontWeight = '510'; // Slightly heavier than normal
+            infoStrings.style.color = computedStyle.color; // Match channel name color
         }
     });
 
-    observer.observe(document, { childList: true, subtree: true });
+    observer.observe(document, { childList: true, subtree: true }); // Watch for DOM changes
 })();
+
