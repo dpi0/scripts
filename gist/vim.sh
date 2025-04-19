@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+echo "██╗   ██╗██╗███╗   ███╗";
+echo "██║   ██║██║████╗ ████║";
+echo "██║   ██║██║██╔████╔██║";
+echo "╚██╗ ██╔╝██║██║╚██╔╝██║";
+echo " ╚████╔╝ ██║██║ ╚═╝ ██║";
+echo "  ╚═══╝  ╚═╝╚═╝     ╚═╝";
+echo "                       ";
+
 PKG="vim"
 CONFIG_FILE="$HOME/.vimrc"
 MY_REPO="https://github.com/dpi0/sh"
