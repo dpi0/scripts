@@ -23,6 +23,22 @@ ALIASES=(
 
 mkdir -p "$HOME/.tmux/plugins"
 
+install_dependencies() {
+  command -v git &> /dev/null && echo -e "✅ git already installed. Skipping installation.\n" && return 0
+  echo "📥 Installing git..."
+  for c in apt pacman dnf; do
+    if command -v $c &> /dev/null; then
+      cmd="sudo $c $([ $c = pacman ] && echo -S --noconfirm --needed || echo install -y) git"
+      echo "🟨 Running: $cmd"
+      eval $cmd && echo "🎉 Installed!" && return 0
+    fi
+  done
+  echo "🟥 Unsupported package manager"
+  return 1
+}
+
+install_dependencies
+
 # Stop running tmux server if active
 stop_tmux_server() {
     if tmux info &> /dev/null; then
