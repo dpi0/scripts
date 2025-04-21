@@ -1,24 +1,24 @@
 #!/usr/bin/env bash
 
-echo "████████╗███╗   ███╗██╗   ██╗██╗  ██╗";
-echo "╚══██╔══╝████╗ ████║██║   ██║╚██╗██╔╝";
-echo "   ██║   ██╔████╔██║██║   ██║ ╚███╔╝ ";
-echo "   ██║   ██║╚██╔╝██║██║   ██║ ██╔██╗ ";
-echo "   ██║   ██║ ╚═╝ ██║╚██████╔╝██╔╝ ██╗";
-echo "   ╚═╝   ╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝";
-echo "                                     ";
+echo "████████╗███╗   ███╗██╗   ██╗██╗  ██╗"
+echo "╚══██╔══╝████╗ ████║██║   ██║╚██╗██╔╝"
+echo "   ██║   ██╔████╔██║██║   ██║ ╚███╔╝ "
+echo "   ██║   ██║╚██╔╝██║██║   ██║ ██╔██╗ "
+echo "   ██║   ██║ ╚═╝ ██║╚██████╔╝██╔╝ ██╗"
+echo "   ╚═╝   ╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝"
+echo "                                     "
 
 PKG="tmux"
 CONFIG_FILE="$HOME/.tmux.conf"
 MY_REPO="https://github.com/dpi0/sh"
 CONFIG_URL="${MY_REPO}/raw/main/.tmux.conf"
 ALIASES=(
-"alias t='tmux'"
-"alias ta='tmux a -t'"
-"alias tls='tmux ls'"
-"alias tn='tmux new-session -s'"
-"alias tk='tmux kill-session -t'"
-"alias tka='tmux kill-server'"
+  "alias t='tmux'"
+  "alias ta='tmux a -t'"
+  "alias tls='tmux ls'"
+  "alias tn='tmux new-session -s'"
+  "alias tk='tmux kill-session -t'"
+  "alias tka='tmux kill-server'"
 )
 
 mkdir -p "$HOME/.tmux/plugins"
@@ -41,12 +41,12 @@ install_dependencies
 
 # Stop running tmux server if active
 stop_tmux_server() {
-    if tmux info &> /dev/null; then
-        echo "Stopping running $PKG server..."
-        tmux kill-server
-    else
-        echo "No running $PKG server detected. Skipping kill-server."
-    fi
+  if tmux info &> /dev/null; then
+    echo "Stopping running $PKG server..."
+    tmux kill-server
+  else
+    echo "No running $PKG server detected. Skipping kill-server."
+  fi
 }
 
 stop_tmux_server
@@ -72,7 +72,7 @@ else
   exit 0
 fi
 
-# Backup existing config 
+# Backup existing config
 if [ -f "$CONFIG_FILE" ]; then
   local timestamp=$(date +"%d-%B-%Y_%H-%M-%S")
   mv "$CONFIG_FILE" "$CONFIG_FILE.$timestamp.old"
@@ -82,12 +82,13 @@ fi
 # Download  config
 curl -fsSL "$CONFIG_URL" -o "$CONFIG_FILE"
 
-git clone "https://github.com/MunifTanjim/tmux-suspend" "$HOME/.tmux/plugins/tmux-suspend"
-git clone "https://github.com/tmux-plugins/tmux-continuum" "$HOME/.tmux/plugins/tmux-continuum"
-git clone "https://github.com/tmux-plugins/tmux-resurrect" "$HOME/.tmux/plugins/tmux-resurrect"
-git clone "https://github.com/wfxr/tmux-fzf-url" "$HOME/.tmux/plugins/tmux-fzf-url"
-git clone "https://github.com/omerxx/tmux-sessionx" "$HOME/.tmux/plugins/tmux-sessionx"
-git clone "https://github.com/omerxx/tmux-floax" "$HOME/.tmux/plugins/tmux-floax"
+# Clone plugins silently
+git clone --depth=1 "https://github.com/MunifTanjim/tmux-suspend" "$HOME/.tmux/plugins/tmux-suspend" > /dev/null 2>&1
+git clone --depth=1 "https://github.com/tmux-plugins/tmux-continuum" "$HOME/.tmux/plugins/tmux-continuum" > /dev/null 2>&1
+git clone --depth=1 "https://github.com/tmux-plugins/tmux-resurrect" "$HOME/.tmux/plugins/tmux-resurrect" > /dev/null 2>&1
+git clone --depth=1 "https://github.com/wfxr/tmux-fzf-url" "$HOME/.tmux/plugins/tmux-fzf-url" > /dev/null 2>&1
+git clone --depth=1 "https://github.com/omerxx/tmux-sessionx" "$HOME/.tmux/plugins/tmux-sessionx" > /dev/null 2>&1
+git clone --depth=1 "https://github.com/omerxx/tmux-floax" "$HOME/.tmux/plugins/tmux-floax" > /dev/null 2>&1
 
 echo -e "\n🔹 To setup alias run:"
 echo -n "    printf \"%s\n\" "
