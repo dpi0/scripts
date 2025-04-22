@@ -29,7 +29,7 @@ install_manually() {
     exit 1
   fi
   echo "🚀 Installing to $LOCAL_BIN_DIR..."
-  if ! install -m 755 "$TMP_DIR/$PKG" "$LOCAL_BIN_DIR/$PKG"; then
+  if ! install -m 755 "$TMP_DIR/${ARCHIVE%.tar.gz}/$PKG" "$LOCAL_BIN_DIR/$PKG"; then
     echo "❌ Installation failed."
     rm -rf "$TMP_DIR"
     exit 1
