@@ -55,6 +55,7 @@ if ! command -v $PKG &> /dev/null; then
   if command -v apt &> /dev/null; then
     echo "🟨 Need superuser password to install $PKG using APT package manager..."
     echo "🔹  sudo apt install -y $PKG"
+    sudo apt install -y $PKG
   elif command -v pacman &> /dev/null; then
     echo "🟨 Need superuser password to install $PKG using Pacman package manager..."
     echo "🔹  sudo pacman -S --noconfirm $PKG"
@@ -74,7 +75,7 @@ fi
 
 # Backup existing config
 if [ -f "$CONFIG_FILE" ]; then
-  local timestamp=$(date +"%d-%B-%Y_%H-%M-%S")
+  timestamp=$(date +"%d-%B-%Y_%H-%M-%S")
   mv "$CONFIG_FILE" "$CONFIG_FILE.$timestamp.old"
   echo "⏳️ Existing config backed up to $CONFIG_FILE.$timestamp.old"
 fi
