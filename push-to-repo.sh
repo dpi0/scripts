@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # pulls, adds everything, auto commits, then pushes to the specified repo using the fine grained token
 # using a cron job every 72h on 2 am - 0 2 */3 * *

@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 
-light_wallpaper="$HOME/Wallpapers/desert4.jpg"
-dark_wallpaper="$HOME/Wallpapers/MacOS Wallpapers/macOS-Wallpapers-master/Abstract 1.jpg"
+# LIGHT_WALLPAPER="$HOME/Wallpapers/desert4.jpg"
+# DARK_WALLPAPER="$HOME/Wallpapers/MacOS Wallpapers/macOS-Wallpapers-master/Abstract 1.jpg"
 
 # Ensure both wallpapers exist
-[[ -f "$light_wallpaper" ]] || {
-  echo "Error: Light wallpaper not found: $light_wallpaper" >&2
+[[ -f "$LIGHT_WALLPAPER" ]] || {
+  echo "Error: Light wallpaper not found: $LIGHT_WALLPAPER" >&2
   exit 1
 }
-[[ -f "$dark_wallpaper" ]] || {
-  echo "Error: Dark wallpaper not found: $dark_wallpaper" >&2
+[[ -f "$DARK_WALLPAPER" ]] || {
+  echo "Error: Dark wallpaper not found: $DARK_WALLPAPER" >&2
   exit 1
 }
 
@@ -19,10 +19,10 @@ current_mode=$(gsettings get org.gnome.desktop.interface color-scheme 2> /dev/nu
 # Determine new mode and wallpaper
 if [[ $current_mode == "'prefer-dark'" ]]; then
   gsettings set org.gnome.desktop.interface color-scheme 'prefer-light'
-  wallpaper="$light_wallpaper"
+  wallpaper="$LIGHT_WALLPAPER"
 else
   gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
-  wallpaper="$dark_wallpaper"
+  wallpaper="$DARK_WALLPAPER"
 fi
 
 # Restart swaybg with selected wallpaper

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Pulls the latest changes from a specified GitHub repository using a fine-grained token
 
