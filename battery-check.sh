@@ -1,36 +1,38 @@
 #!/usr/bin/env bash
 
-color_red=#FF0000
-color_green=#11ff00
+BATTERY_LOW=18
+BATTERY_HIGH=92
 LOG_FILE="$HOME/.battery.log"
-
-# Set this to 1 to enable logging, 0 to disable it
 LOGGING_ENABLED=0
+COLOR_RED="#FF0000"
+COLOR_GREEN="#11FF00"
 
-# Log function
 log() {
-  if [[ $LOGGING_ENABLED -eq 1 ]]; then
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
-  fi
+  [[ $LOGGING_ENABLED -eq 1 ]] && echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
 }
 
-acpi_output=$(acpi -b)
-ac_status=$(echo "$acpi_output" | awk '{print $3}' | tr -d ',')
-pct_now=$(echo "$acpi_output" | awk '{print $4}' | tr -d '%,,')
+# Get battery information
+battery_info=$(acpi -b)
+charging_status=$(echo "$battery_info" | grep -oE 'Charging|Discharging')
+battery_percent=$(echo "$battery_info" | grep -oE '[0-9]+%' | tr -d '%')
 
-pct_low_threshold=18
-pct_high_threshold=92
+log "Battery Percentage: $battery_percent%"
 
-log "Battery Percentage: $pct_now%"
-
-# If charging and above high threshold, raise dunstify warning.
-if [[ $ac_status == "Charging" && $pct_now -gt $pct_high_threshold ]]; then
-  dunstify -u critical -h string:fgcolor:"$color_green" -h string:frcolor:"$color_green" -h string:hlcolor:"$color_green" "Battery High, Disconnect" "Battery level is at ${pct_now}%."
-  log "Notification: Battery High - ${pct_now}%"
-fi
-
-# If discharging and below low threshold, raise dunstify warning.
-if [[ $ac_status == "Discharging" && $pct_now -lt $pct_low_threshold ]]; then
-  dunstify -u critical -h string:fgcolor:"$color_red" -h string:frcolor:"$color_red" -h string:hlcolor:"$color_red" "Low Battery, Plug in" "Battery level is at ${pct_now}%."
-  log "Notification: Low Battery - ${pct_now}%"
+# Check battery conditions and send notifications if needed
+if [[ "$charging_status" == "Charging" && $battery_percent -gt $BATTERY_HIGH ]]; then
+  dunstify -u critical \
+    -h string:fgcolor:"$COLOR_GREEN" \
+    -h string:frcolor:"$COLOR_GREEN" \
+    -h string:hlcolor:"$COLOR_GREEN" \
+    "Battery High, Disconnect" \
+    "Battery level is at ${battery_percent}%."
+  log "Notification: Battery High - ${battery_percent}%"
+elif [[ "$charging_status" == "Discharging" && $battery_percent -lt $BATTERY_LOW ]]; then
+  dunstify -u critical \
+    -h string:fgcolor:"$COLOR_RED" \
+    -h string:frcolor:"$COLOR_RED" \
+    -h string:hlcolor:"$COLOR_RED" \
+    "Low Battery, Plug in" \
+    "Battery level is at ${battery_percent}%."
+  log "Notification: Low Battery - ${battery_percent}%"
 fi
