@@ -75,21 +75,25 @@ fi
 
 # Backup existing config
 if [ -f "$CONFIG_FILE" ]; then
-  timestamp=$(date +"%d-%B-%Y_%H-%M-%S")
-  mv "$CONFIG_FILE" "$CONFIG_FILE.$timestamp.old"
-  echo "⏳️ Existing config backed up to $CONFIG_FILE.$timestamp.old"
+  TIMESTAMP=$(date +"%d-%B-%Y_%H-%M-%S")
+  mv "$CONFIG_FILE" "$CONFIG_FILE.$TIMESTAMP"
+  echo "⏳️ Existing config backed up to $CONFIG_FILE.$TIMESTAMP"
 fi
 
 # Download  config
 curl -fsSL "$CONFIG_URL" -o "$CONFIG_FILE"
 
 # Clone plugins silently
-git clone --depth=1 "https://github.com/MunifTanjim/tmux-suspend" "$HOME/.tmux/plugins/tmux-suspend" > /dev/null 2>&1
-git clone --depth=1 "https://github.com/tmux-plugins/tmux-continuum" "$HOME/.tmux/plugins/tmux-continuum" > /dev/null 2>&1
-git clone --depth=1 "https://github.com/tmux-plugins/tmux-resurrect" "$HOME/.tmux/plugins/tmux-resurrect" > /dev/null 2>&1
-git clone --depth=1 "https://github.com/wfxr/tmux-fzf-url" "$HOME/.tmux/plugins/tmux-fzf-url" > /dev/null 2>&1
-git clone --depth=1 "https://github.com/omerxx/tmux-sessionx" "$HOME/.tmux/plugins/tmux-sessionx" > /dev/null 2>&1
-git clone --depth=1 "https://github.com/omerxx/tmux-floax" "$HOME/.tmux/plugins/tmux-floax" > /dev/null 2>&1
+# git clone --depth=1 "https://github.com/dpi0/tmux-toggle-nest" "$HOME/.tmux/plugins/tmux-suspend" > /dev/null 2>&1
+# git clone --depth=1 "https://github.com/tmux-plugins/tmux-continuum" "$HOME/.tmux/plugins/tmux-continuum" > /dev/null 2>&1
+# git clone --depth=1 "https://github.com/tmux-plugins/tmux-resurrect" "$HOME/.tmux/plugins/tmux-resurrect" > /dev/null 2>&1
+# git clone --depth=1 "https://github.com/wfxr/tmux-fzf-url" "$HOME/.tmux/plugins/tmux-fzf-url" > /dev/null 2>&1
+# git clone --depth=1 "https://github.com/omerxx/tmux-sessionx" "$HOME/.tmux/plugins/tmux-sessionx" > /dev/null 2>&1
+# git clone --depth=1 "https://github.com/omerxx/tmux-floax" "$HOME/.tmux/plugins/tmux-floax" > /dev/null 2>&1
+
+# Install TPM
+echo "📥 Downloading TPM (TMUX Plugin Manager) to $HOME/.tmux/plugins/tpm"
+git clone --depth=1 "https://github.com/tmux-plugins/tpm" "$HOME/.tmux/plugins/tpm" > /dev/null 2>&1
 
 echo -e "\n🔹 To setup alias run:"
 echo -n "    printf \"%s\n\" "
