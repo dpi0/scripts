@@ -1,14 +1,8 @@
 #!/usr/bin/env bash
 
-ENV_FILE="${PWD}/.env"
-
-if [[ -f "$ENV_FILE" ]]; then
-  export $(grep -E '^[A-Za-z_][A-Za-z0-9_]*=' "$ENV_FILE" | xargs -d '\n')
-else
-  echo "Error: Environment file not found at $ENV_FILE" >&2
-  exit 1
-fi
-
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ENV_FILE="$SCRIPT_DIR/.env"
+[[ -f "$ENV_FILE" ]] && set -a && source "$ENV_FILE" && set +a || echo "🟡 Warning: .env not found at '$ENV_FILE'" >&2
 
 # Config
 base_url="${IMGUR_APP_URL}"
