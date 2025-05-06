@@ -41,7 +41,7 @@ Protocol 2
 Port $SSH_PORT
 LogLevel VERBOSE
 AllowUsers $SSH_USER
-UsePAM no
+UsePAM yes
 
 Match user $SSH_USER
     PubkeyAuthentication yes
