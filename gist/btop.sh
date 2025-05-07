@@ -74,7 +74,7 @@ backup_pkg_config
 deploy_pkg_config
 
 if ! command -v $PKG &> /dev/null; then
-  if command -v apt &> /dev/null && command -v bzip2 &> /dev/null; then
+  if command -v apt &> /dev/null || command -v bzip2 &> /dev/null; then
     echo "🟨 Need superuser password to install bzip2 using APT package manager..."
     echo "🔹  sudo apt install -y bzip2"
     sudo apt install -y bzip2 && install_manually
