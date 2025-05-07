@@ -7,16 +7,15 @@ ENV_FILE="$SCRIPT_DIR/.env"
 notify() {
   local msg="$1"
   curl -s "${NOTIFY_URL}/message?token=${NOTIFY_TOKEN}" \
-    -F "title=🟢 Finishing Backrest Snapshot" \
+    -F "title=🟠 Starting Backup..." \
     -F "message=$msg" > /dev/null
 }
 
-STOPPED=$(docker ps -q -f "status=exited" 2> /dev/null)
+RUNNING=$(docker ps -q 2> /dev/null)
 
-if [ -n "$STOPPED" ]; then
-  docker start $STOPPED > /dev/null 2>&1
-  sleep 20 > /dev/null 2>&1
-  notify "🔵 Restarting docker containers. Services will be working soon."
+if [ -n "$RUNNING" ]; then
+  docker stop $RUNNING > /dev/null 2>&1
+  notify "🔴 Stopping all docker containers. No services will available for a while."
 else
-  notify "🟡 No containers were restarted."
+  notify "🟡 No target containers were running or found to stop."
 fi

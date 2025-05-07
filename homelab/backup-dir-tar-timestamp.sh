@@ -14,14 +14,16 @@ DEFAULT_DEST_DIR="/hdd/backup"
 TIMESTAMP_FORMAT="%d-%B-%Y_%H-%M-%S"
 SRC_DIR="$1"
 DEST_DIR="${2:-$DEFAULT_DEST_DIR}"
-BASENAME=$(basename "$SRC_DIR")
+ABS_SRC_DIR="$(realpath "$SRC_DIR")"
+SANITIZED_PATH="${ABS_SRC_DIR//\//__}"
 TIMESTAMP=$(date +"$TIMESTAMP_FORMAT")
-ARCHIVE_NAME="${BASENAME}_${TIMESTAMP}.tar.gz"
+ARCHIVE_NAME="${SANITIZED_PATH}_${TIMESTAMP}.tar.gz"
 ARCHIVE_PATH="${DEST_DIR}/${ARCHIVE_NAME}"
 RETENTION_DAYS=15 # Keep backups from the last n days
 
 usage() {
-  echo "Usage: $0 <directory_to_backup> [destination_directory]"
+  echo "Usage: $0 <directory_to_backup> [destination_directory]."
+  echo "Default [destination_directory] is '/hdd/backup'"
   exit 1
 }
 

@@ -7,7 +7,7 @@ ENV_FILE="$SCRIPT_DIR/.env"
 notify() {
   local msg="$1"
   curl -s "${NOTIFY_URL}/message?token=${NOTIFY_TOKEN}" \
-    -F "title=🟢 Finishing Backrest Snapshot" \
+    -F "title=🟢 Finished Backup" \
     -F "message=$msg" > /dev/null
 }
 

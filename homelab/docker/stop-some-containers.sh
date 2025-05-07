@@ -7,13 +7,11 @@ ENV_FILE="$SCRIPT_DIR/.env"
 notify() {
   local msg="$1"
   curl -s "${NOTIFY_URL}/message?token=${NOTIFY_TOKEN}" \
-    -F "title=🟠 Starting Backrest Snapshot" \
+    -F "title=🟠 Starting Backup..." \
     -F "message=$msg" > /dev/null
 }
 
 # TARGET_CONTAINERS=(immich_server immich_redis immich_postgres)
-# TARGET_CONTAINERS=(lychee backrest)
-# Use command-line arguments as the list of containers to restart
 TARGET_CONTAINERS=("$@")
 
 if [ ${#TARGET_CONTAINERS[@]} -eq 0 ]; then

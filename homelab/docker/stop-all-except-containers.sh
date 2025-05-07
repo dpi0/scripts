@@ -15,7 +15,7 @@ fi
 notify() {
   local msg="$1"
   curl -s "${NOTIFY_URL}/message?token=${NOTIFY_TOKEN}" \
-    -F "title=🟠 Starting Backrest Snapshot" \
+    -F "title=🟠 Starting Backup..." \
     -F "message=$msg" > /dev/null
 }
 
