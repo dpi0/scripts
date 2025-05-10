@@ -1,28 +1,29 @@
 #!/usr/bin/env bash
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ENV_FILE="$SCRIPT_DIR/.env"
-[[ -f "$ENV_FILE" ]] && set -a && source "$ENV_FILE" && set +a || echo "🟡 Warning: .env not found at '$ENV_FILE'" >&2
+ENV_FILE="$HOME/.scripts.env"
+[[ -f $ENV_FILE ]] && set -a && source "$ENV_FILE" && set +a || {
+  echo "❌ Env File: '$ENV_FILE' not found. Exiting." >&2
+  exit 1
+}
+
+TOKEN=$QB_NOTIFY_TOKEN
+LOG_FILE=$QB_LOG_FILE_PATH
 
 TORRENT_NAME=${1:-"Unknown Torrent"}
 CATEGORY=${2:-"Unknown Category"}
 CONTENT_PATH=${3:-"Unknown Content Path"}
 PRIORITY=5
 
-notify() {
-  curl -s "${NOTIFY_URL}/message?token=${QB_NOTIFY_TOKEN}" \
-    -F "title=📥 $TORRENT_NAME" \
-    -F "message='🟢 Media saved to $CONTENT_PATH'" \
-    -F "priority=$PRIORITY"
-}
+echo "----------------------------------------" >> "$LOG_FILE"
+echo "Timestamp: $(date)" >> "$LOG_FILE"
+echo "TORRENT_NAME: $TORRENT_NAME" >> "$LOG_FILE"
+echo "CONTENT_PATH: $CONTENT_PATH" >> "$LOG_FILE"
+echo "CATEGORY: $CATEGORY" >> "$LOG_FILE"
+echo "PRIORITY: $PRIORITY" >> "$LOG_FILE"
 
-echo "----------------------------------------" >> "$QB_LOG_FILE_PATH"
-echo "Timestamp: $(date)" >> "$QB_LOG_FILE_PATH"
-echo "TORRENT_NAME: $TORRENT_NAME" >> "$QB_LOG_FILE_PATH"
-echo "CONTENT_PATH: $CONTENT_PATH" >> "$QB_LOG_FILE_PATH"
-echo "CATEGORY: $CATEGORY" >> "$QB_LOG_FILE_PATH"
-echo "PRIORITY: $PRIORITY" >> "$QB_LOG_FILE_PATH"
+"$HOME/scripts/helpers/notify.sh" \
+  --token "$TOKEN" \
+  --title "📥 $TORRENT_NAME" \
+  --message "🟢 Media saved to $CONTENT_PATH"
 
-notify
-
-echo "Notification sent successfully." >> "$QB_LOG_FILE_PATH"
+echo "Notification sent successfully." >> "$LOG_FILE"

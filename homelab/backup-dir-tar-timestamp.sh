@@ -6,9 +6,11 @@
 # tar file is named with the full path of the input directory (with slashes replaced by underscores)
 # -----------------
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ENV_FILE="$SCRIPT_DIR/.env"
-[[ -f "$ENV_FILE" ]] && set -a && source "$ENV_FILE" && set +a || echo "🟡 Warning: .env not found at '$ENV_FILE'" >&2
+ENV_FILE="$HOME/.scripts.env"
+[[ -f $ENV_FILE ]] && set -a && source "$ENV_FILE" && set +a || {
+  echo "❌ Env File: '$ENV_FILE' not found. Exiting." >&2
+  exit 1
+}
 
 DEFAULT_DEST_DIR="/hdd/backup"
 TIMESTAMP_FORMAT="%d-%B-%Y_%H-%M-%S"

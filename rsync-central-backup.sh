@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ENV_FILE="$SCRIPT_DIR/.env"
-[[ -f "$ENV_FILE" ]] && set -a && source "$ENV_FILE" && set +a || echo "🟡 Warning: .env not found at '$ENV_FILE'" >&2
+ENV_FILE="$HOME/.scripts.env"
+[[ -f $ENV_FILE ]] && set -a && source "$ENV_FILE" && set +a || {
+  echo "❌ Env File: '$ENV_FILE' not found. Exiting." >&2
+  exit 1
+}
 
 SSH_HOST=$SSH_HOST
 SSH_PORT=$SSH_PORT

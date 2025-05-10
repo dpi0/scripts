@@ -1,21 +1,24 @@
 #!/usr/bin/env bash
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ENV_FILE="$SCRIPT_DIR/.env"
-[[ -f "$ENV_FILE" ]] && set -a && source "$ENV_FILE" && set +a || echo "🟡 Warning: .env not found at '$ENV_FILE'" >&2
-
-notify() {
-  local msg="$1"
-  curl -s "${NOTIFY_URL}/message?token=${NOTIFY_TOKEN}" \
-    -F "title=🟠 Starting Backup..." \
-    -F "message=$msg" > /dev/null
+ENV_FILE="$HOME/.scripts.env"
+[[ -f $ENV_FILE ]] && set -a && source "$ENV_FILE" && set +a || {
+  echo "❌ Env File: '$ENV_FILE' not found. Exiting." >&2
+  exit 1
 }
 
+TOKEN=$GOTIFY_CONTAINER_MANAGE_TOKEN
 RUNNING=$(docker ps -q 2> /dev/null)
 
 if [ -n "$RUNNING" ]; then
   docker stop $RUNNING > /dev/null 2>&1
-  notify "🔴 Stopping all docker containers. No services will available for a while."
+  sleep 20 > /dev/null 2>&1
+  "$HOME/scripts/helpers/notify.sh" \
+    --token "$TOKEN" \
+    --title "🔴 Stopping All Containers..." \
+    --message "No service will available for a while"
 else
-  notify "🟡 No target containers were running or found to stop."
+  "$HOME/scripts/helpers/notify.sh" \
+    --token "$TOKEN" \
+    --title "🟡 No target containers were running or found to stop." \
+    --message "Nothing could be stopped."
 fi

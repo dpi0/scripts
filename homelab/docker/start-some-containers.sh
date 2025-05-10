@@ -1,17 +1,12 @@
 #!/usr/bin/env bash
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ENV_FILE="$SCRIPT_DIR/.env"
-[[ -f "$ENV_FILE" ]] && set -a && source "$ENV_FILE" && set +a || echo "🟡 Warning: .env not found at '$ENV_FILE'" >&2
-
-notify() {
-  local msg="$1"
-  curl -s "${NOTIFY_URL}/message?token=${NOTIFY_TOKEN}" \
-    -F "title=🟢 Finished Backup" \
-    -F "message=$msg" > /dev/null
+ENV_FILE="$HOME/.scripts.env"
+[[ -f $ENV_FILE ]] && set -a && source "$ENV_FILE" && set +a || {
+  echo "❌ Env File: '$ENV_FILE' not found. Exiting." >&2
+  exit 1
 }
 
-# TARGET_CONTAINERS=(immich_server immich_redis immich_postgres)
+TOKEN=$GOTIFY_CONTAINER_MANAGE_TOKEN
 TARGET_CONTAINERS=("$@")
 
 if [ ${#TARGET_CONTAINERS[@]} -eq 0 ]; then
@@ -29,7 +24,13 @@ if [ -n "$TO_START" ]; then
   RESTARTED_NAMES=$(docker inspect --format '{{.Name}}' $TO_START 2> /dev/null | sed 's#^/##' | paste -sd ' ' -)
   docker start $TO_START > /dev/null 2>&1
   sleep 20 > /dev/null 2>&1
-  notify "🔵 Restarting containers: $RESTARTED_NAMES. Services will be working soon."
+  "$HOME/scripts/helpers/notify.sh" \
+    --token "$TOKEN" \
+    --title "🟢 Starting Containers" \
+    --message "Services will be working soon. $RESTARTED_NAMES."
 else
-  notify "🟡 No target containers were restarted."
+  "$HOME/scripts/helpers/notify.sh" \
+    --token "$TOKEN" \
+    --title "🟡 No containers were restarted." \
+    --message "Nothing was found to start."
 fi

@@ -4,30 +4,16 @@
 # using a cron job every 72h on 2 am - 0 2 */3 * *
 # don't know how useful it is
 
-# Configuration
-REPO_PATH="$HOME/server" # Path to the local Git repository
-BRANCH="main"            # Branch to push changes to
+REPO_PATH="$HOME/server"
+BRANCH="main"
 COMMIT_MESSAGE="Push all files $(TZ=Asia/Kolkata date +"%d %b %Y %H:%M")"
 GITHUB_USERNAME="dpi0"
 GITHUB_REPO_NAME="1ec2-aws"
-GITHUB_TOKEN="xyz" # Fine-grained GitHub PAT
+GITHUB_TOKEN="$GITHUB_PULL_PUSH_REPO_TOKEN"
 
-# Change directory to the repository
 cd "$REPO_PATH" || {
   echo "Repository path not found"
   exit 1
-}
-
-# Function to stop all Docker containers
-stop_docker_containers() {
-  echo "Stopping all Docker containers..."
-  docker stop $(docker ps -aq)
-}
-
-# Function to start all Docker containers
-start_docker_containers() {
-  echo "Starting all Docker containers..."
-  docker start $(docker ps -aq)
 }
 
 cd "$REPO_PATH" || {
@@ -37,22 +23,11 @@ cd "$REPO_PATH" || {
 
 # Check for changes
 if [[ -n $(git status --porcelain) ]]; then
-  stop_docker_containers
-
   echo "Changes detected, preparing to push..."
-
-  # Add changes
   git add .
-
-  # Commit changes
   git commit -m "$COMMIT_MESSAGE"
-
-  # Push changes
   git push https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/${GITHUB_USERNAME}/$GITHUB_REPO_NAME.git "$BRANCH"
-
   echo "Changes pushed successfully!"
-
-  start_docker_containers
 else
   echo "No changes detected. Exiting."
 fi

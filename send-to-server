@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 
-# Default values
-PORT=3333
-KEY="$HOME/.ssh/home-server"
-USER="user"
-ADDRESS="SERVER_LOCAL_IP"
+ENV_FILE="$HOME/.scripts.env"
+[[ -f $ENV_FILE ]] && set -a && source "$ENV_FILE" && set +a || {
+  echo "❌ Env File: '$ENV_FILE' not found. Exiting." >&2
+  exit 1
+}
+
+SERVER_SSH_PORT=$SERVER_SSH_PORT
+SERVER_SSH_KEY=$SERVER_SSH_KEY
+SERVER_SSH_USER=$SERVER_SSH_USER
+SERVER_SSH_ADDRESS=$SERVER_SSH_ADDRESS
 
 # Function to display help
 show_help() {
@@ -23,19 +28,19 @@ show_help() {
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     -p | --port)
-      PORT="$2"
+      SERVER_SSH_PORT="$2"
       shift
       ;;
     -i | --key)
-      KEY="$2"
+      SERVER_SSH_KEY="$2"
       shift
       ;;
     -u | --user)
-      USER="$2"
+      SERVER_SSH_USER="$2"
       shift
       ;;
     -a | --address)
-      ADDRESS="$2"
+      SERVER_SSH_ADDRESS="$2"
       shift
       ;;
     -s | --source)
@@ -75,11 +80,11 @@ if [[ -z "$DESTINATION" ]]; then
 fi
 
 # Construct the rsync command
-rsync_command="rsync -havz --progress -e 'ssh -p $PORT -i $KEY'"
+rsync_command="rsync -havz --progress -e 'ssh -p $SERVER_SSH_PORT -i $SERVER_SSH_KEY'"
 for src in "${SOURCE[@]}"; do
   rsync_command+=" '$src'"
 done
-rsync_command+=" '$USER@$ADDRESS:$DESTINATION'"
+rsync_command+=" '$SERVER_SSH_USER@$SERVER_SSH_ADDRESS:$DESTINATION'"
 
 # Execute the rsync command
 eval $rsync_command
