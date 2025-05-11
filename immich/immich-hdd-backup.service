@@ -1,7 +1,0 @@
-[Unit]
-Description=Immich HDD Backup
-
-[Service]
-Type=oneshot
-ExecStart=/home/dpi0/scripts/immich/immich-hdd-backup.sh --log
-User=root
