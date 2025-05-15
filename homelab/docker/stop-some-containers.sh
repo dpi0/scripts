@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ENV_FILE="$HOME/.scripts.env"
+ENV_FILE="/home/dpi0/.scripts.env"
 [[ -f $ENV_FILE ]] && set -a && source "$ENV_FILE" && set +a || {
   echo "❌ Env File: '$ENV_FILE' not found. Exiting." >&2
   exit 1
