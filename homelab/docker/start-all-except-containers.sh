@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
-ENV_FILE="/home/dpi0/.scripts.env"
+HOME=/home/dpi0
+ENV_FILE="$HOME/.scripts.env"
 [[ -f $ENV_FILE ]] && set -a && source "$ENV_FILE" && set +a || {
   echo "❌ Env File: '$ENV_FILE' not found. Exiting." >&2
   exit 1
 }
 
 TOKEN=$GOTIFY_CONTAINER_MANAGE_TOKEN
+NOTIFY_SCRIPT="$HOME/scripts/helpers/notify.sh"
 IGNORE_CONTAINERS=("$@")
 
 if [ ${#IGNORE_CONTAINERS[@]} -eq 0 ]; then
@@ -26,13 +28,13 @@ TO_START=$(comm -23 <(echo "$ALL_STOPPED" | sort) <(echo "$IGNORED" | sort))
 if [ -n "$TO_START" ]; then
   RESTARTED_NAMES=$(docker inspect --format '{{.Name}}' $TO_START 2> /dev/null | sed 's#^/##' | paste -sd ' ' -)
   docker start $TO_START > /dev/null 2>&1
-  "$HOME/scripts/helpers/notify.sh" \
-    --token "$TOKEN" \
-    --title "🟢 Starting Containers" \
+  "$NOTIFY_SCRIPT" \
+    --token "${TOKEN}" \
+    --title "🟢 Starting some containers on $HOSTNAME" \
     --message "Services will be working soon. $RESTARTED_NAMES."
 else
-  "$HOME/scripts/helpers/notify.sh" \
-    --token "$TOKEN" \
-    --title "🟡 No containers were restarted." \
-    --message "Nothing was found to start."
+  "$NOTIFY_SCRIPT" \
+    --token "${TOKEN}" \
+    --title "🟡 No containers were restarted on $HOSTNAME" \
+    --message "Nothing was started."
 fi

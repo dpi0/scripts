@@ -1,35 +1,41 @@
 #!/usr/bin/env bash
 
-ENV_FILE="/home/dpi0/.scripts.env"
+HOME=/home/dpi0
+ENV_FILE="$HOME/.scripts.env"
 [[ -f $ENV_FILE ]] && set -a && source "$ENV_FILE" && set +a || {
   echo "❌ Env File: '$ENV_FILE' not found. Exiting." >&2
   exit 1
 }
 
-TOKEN=$GOTIFY_CONTAINER_MANAGE_TOKEN
-TARGET_CONTAINERS=("$@")
+TOKEN=${GOTIFY_CONTAINER_MANAGE_TOKEN}
+NOTIFY_SCRIPT="$HOME/scripts/helpers/notify.sh"
 
-if [ ${#TARGET_CONTAINERS[@]} -eq 0 ]; then
-  echo "🔴 No containers specified to stop. Usage: $0 container1 container2 ..." >&2
+if [ "$#" -eq 0 ]; then
+  echo "🔴 No containers specified to stop. Usage: $1 container1 container2 ..." >&2
   exit 1
 fi
 
-# Resolve container IDs for the specific targets that are currently running
-TO_STOP=$(docker ps --filter "status=running" --format '{{.Names}} {{.ID}}' 2> /dev/null | awk '
-  BEGIN { split("'"${TARGET_CONTAINERS[*]}"'", t); for (i in t) map[t[i]] = 1 }
-  map[$1] { print $2 }
-')
+STOPPED=()
+NOT_FOUND=()
 
-if [ -n "$TO_STOP" ]; then
-  STOPPED_NAMES=$(docker inspect --format '{{.Name}}' $TO_STOP 2> /dev/null | sed 's#^/##' | paste -sd ' ' -)
-  docker stop $TO_STOP > /dev/null 2>&1
-  "$HOME/scripts/helpers/notify.sh" \
+for container in "$@"; do
+  if docker ps -q -f name="^${container}$" | grep -q .; then
+    docker stop "$container" > /dev/null 2>&1 && STOPPED+=("$container")
+  else
+    NOT_FOUND+=("$container")
+  fi
+done
+
+if [ "${#STOPPED[@]}" -gt 0 ]; then
+  "$NOTIFY_SCRIPT" \
     --token "$TOKEN" \
-    --title "🔴 Stopping Containers..." \
-    --message "These services will be temporarily unavailable: $STOPPED_NAMES."
-else
-  "$HOME/scripts/helpers/notify.sh" \
+    --title "🛑 Stopped some containers on $HOSTNAME" \
+    --message "Stopped: ${STOPPED[*]}"
+fi
+
+if [ "${#NOT_FOUND[@]}" -gt 0 ]; then
+  "$NOTIFY_SCRIPT" \
     --token "$TOKEN" \
-    --title "🟡 No target containers were running or found to stop." \
-    --message "Nothing could be stopped."
+    --title "🟡 No target containers were running or found to stop on $HOSTNAME." \
+    --message "Not running or not found: ${NOT_FOUND[*]}"
 fi
