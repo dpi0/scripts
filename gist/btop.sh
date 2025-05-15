@@ -49,7 +49,7 @@ backup_pkg_config() {
 
 deploy_pkg_config() {
   echo "📥 Downloading config $MY_REPO/raw/main/btop.conf to $PKG_CONFIG_DIR/btop.conf"
-  curl -fsSL "${MY_REPO}/raw/main/btop.conf" -o "$PKG_CONFIG_DIR/btop.conf"
+  curl -fsSL "${MY_REPO}/raw/main/btop/btop.conf" -o "$PKG_CONFIG_DIR/btop.conf"
 }
 
 install_manually() {
