@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
-echo "██╗   ██╗██╗███╗   ███╗";
-echo "██║   ██║██║████╗ ████║";
-echo "██║   ██║██║██╔████╔██║";
-echo "╚██╗ ██╔╝██║██║╚██╔╝██║";
-echo " ╚████╔╝ ██║██║ ╚═╝ ██║";
-echo "  ╚═══╝  ╚═╝╚═╝     ╚═╝";
-echo "                       ";
+echo "██╗   ██╗██╗███╗   ███╗"
+echo "██║   ██║██║████╗ ████║"
+echo "██║   ██║██║██╔████╔██║"
+echo "╚██╗ ██╔╝██║██║╚██╔╝██║"
+echo " ╚████╔╝ ██║██║ ╚═╝ ██║"
+echo "  ╚═══╝  ╚═╝╚═╝     ╚═╝"
+echo "                       "
 
 PKG="vim"
 CONFIG_FILE="$HOME/.vimrc"
 MY_REPO="https://github.com/dpi0/sh"
-CONFIG_URL="${MY_REPO}/raw/main/.vimrc"
+CONFIG_URL="${MY_REPO}/raw/main/vim/.vimrc"
 
 install_dependencies() {
   command -v git &> /dev/null && echo -e "✅ git already installed. Skipping installation.\n" && return 0
@@ -29,7 +29,7 @@ install_dependencies() {
 
 install_dependencies
 
-# Backup existing config 
+# Backup existing config
 if [ -f "$CONFIG_FILE" ]; then
   local timestamp=$(date +"%d-%B-%Y_%H-%M-%S")
   mv "$CONFIG_FILE" "$CONFIG_FILE.$timestamp.old"

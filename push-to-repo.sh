@@ -12,22 +12,22 @@ GITHUB_REPO_NAME="1ec2-aws"
 GITHUB_TOKEN="$GITHUB_PULL_PUSH_REPO_TOKEN"
 
 cd "$REPO_PATH" || {
-  echo "Repository path not found"
-  exit 1
+	echo "Repository path not found"
+	exit 1
 }
 
 cd "$REPO_PATH" || {
-  echo "Repository path not found"
-  exit 1
+	echo "Repository path not found"
+	exit 1
 }
 
 # Check for changes
 if [[ -n $(git status --porcelain) ]]; then
-  echo "Changes detected, preparing to push..."
-  git add .
-  git commit -m "$COMMIT_MESSAGE"
-  git push https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/${GITHUB_USERNAME}/$GITHUB_REPO_NAME.git "$BRANCH"
-  echo "Changes pushed successfully!"
+	echo "Changes detected, preparing to push..."
+	git add .
+	git commit -m "$COMMIT_MESSAGE"
+	git push https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/${GITHUB_USERNAME}/$GITHUB_REPO_NAME.git "$BRANCH"
+	echo "Changes pushed successfully!"
 else
-  echo "No changes detected. Exiting."
+	echo "No changes detected. Exiting."
 fi

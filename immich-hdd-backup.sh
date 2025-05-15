@@ -2,8 +2,8 @@
 
 ENV_FILE="$HOME/.scripts.env"
 [[ -f $ENV_FILE ]] && set -a && source "$ENV_FILE" && set +a || {
-  echo "❌ Env File: '$ENV_FILE' not found. Exiting." >&2
-  exit 1
+	echo "❌ Env File: '$ENV_FILE' not found. Exiting." >&2
+	exit 1
 }
 
 # === Global Variables ===
@@ -18,27 +18,27 @@ ENABLE_LOG=false
 
 # === Parse Args ===
 if [[ "$1" == "--log" ]]; then
-  ENABLE_LOG=true
+	ENABLE_LOG=true
 fi
 
 # === Logging Function ===
 log() {
-  if $ENABLE_LOG; then
-    echo "$1" | tee -a "$LOGFILE"
-  else
-    echo "$1"
-  fi
+	if $ENABLE_LOG; then
+		echo "$1" | tee -a "$LOGFILE"
+	else
+		echo "$1"
+	fi
 }
 
 # === Mount Checks ===
 if ! mountpoint -q /hdd; then
-  log "Error: /hdd is not mounted."
-  exit 1
+	log "Error: /hdd is not mounted."
+	exit 1
 fi
 
 if ! mountpoint -q /space; then
-  log "Error: /space is not mounted."
-  exit 1
+	log "Error: /space is not mounted."
+	exit 1
 fi
 
 # === Start Logging ===
@@ -48,9 +48,9 @@ log "Destination: $DEST"
 
 # === Backup Execution ===
 if $ENABLE_LOG; then
-  rsync -a --exclude="$EXCLUDE1" --exclude="$EXCLUDE2" "$SRC/" "$DEST" | tee -a "$LOGFILE"
+	rsync -a --exclude="$EXCLUDE1" --exclude="$EXCLUDE2" "$SRC/" "$DEST" | tee -a "$LOGFILE"
 else
-  rsync -a --exclude="$EXCLUDE1" --exclude="$EXCLUDE2" "$SRC/" "$DEST"
+	rsync -a --exclude="$EXCLUDE1" --exclude="$EXCLUDE2" "$SRC/" "$DEST"
 fi
 
 log "=== Backup finished at $(date +"%Y-%m-%d %H:%M:%S") ==="

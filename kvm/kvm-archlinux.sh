@@ -15,16 +15,22 @@ USERGROUP="wheel"
 USER_PASSWORD="user"
 # ROOT_PASSWORD="root"
 
-check_root() { [[ $(id -u) -eq 0 ]] || { echo "ERROR: Run this script as root"; exit 1; }; }
-check_uefi() { [[ -d /sys/firmware/efi ]] || { echo "ERROR: UEFI required"; exit 1; }; }
+check_root() { [[ $(id -u) -eq 0 ]] || {
+  echo "ERROR: Run this script as root"
+  exit 1
+}; }
+check_uefi() { [[ -d /sys/firmware/efi ]] || {
+  echo "ERROR: UEFI required"
+  exit 1
+}; }
 
-echo " █████╗ ██████╗  ██████╗██╗  ██╗    ██╗     ██╗███╗   ██╗██╗   ██╗██╗  ██╗";
-echo "██╔══██╗██╔══██╗██╔════╝██║  ██║    ██║     ██║████╗  ██║██║   ██║╚██╗██╔╝";
-echo "███████║██████╔╝██║     ███████║    ██║     ██║██╔██╗ ██║██║   ██║ ╚███╔╝ ";
-echo "██╔══██║██╔══██╗██║     ██╔══██║    ██║     ██║██║╚██╗██║██║   ██║ ██╔██╗ ";
-echo "██║  ██║██║  ██║╚██████╗██║  ██║    ███████╗██║██║ ╚████║╚██████╔╝██╔╝ ██╗";
-echo "╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝    ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝";
-echo "                                                                          ";
+echo " █████╗ ██████╗  ██████╗██╗  ██╗    ██╗     ██╗███╗   ██╗██╗   ██╗██╗  ██╗"
+echo "██╔══██╗██╔══██╗██╔════╝██║  ██║    ██║     ██║████╗  ██║██║   ██║╚██╗██╔╝"
+echo "███████║██████╔╝██║     ███████║    ██║     ██║██╔██╗ ██║██║   ██║ ╚███╔╝ "
+echo "██╔══██║██╔══██╗██║     ██╔══██║    ██║     ██║██║╚██╗██║██║   ██║ ██╔██╗ "
+echo "██║  ██║██║  ██║╚██████╗██║  ██║    ███████╗██║██║ ╚████║╚██████╔╝██╔╝ ██╗"
+echo "╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝    ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝"
+echo "                                                                          "
 
 preliminary_setup() {
   # setfont "$FONT"
@@ -78,24 +84,31 @@ setup_bootloader() {
     echo timeout 0
     echo console-mode max
     echo editor no
-  } >>/boot/loader/loader.conf
-  
+  } >> /boot/loader/loader.conf
+
   UUID=$(blkid -s UUID -o value "$DISK"2)
   {
     echo title Arch Linux
     echo linux /vmlinuz-linux-lts
     echo initrd /initramfs-linux-lts.img
     echo options root=UUID="$UUID" quiet rw
-  } >>/boot/loader/entries/arch.conf
+  } >> /boot/loader/entries/arch.conf
 }
 
 main() {
-  check_root; check_uefi; preliminary_setup; partitioning; install_base
+  check_root
+  check_uefi
+  preliminary_setup
+  partitioning
+  install_base
   cp "$0" /mnt/root/install.sh
   arch-chroot /mnt /bin/bash /root/install.sh chroot
   umount -R /mnt && reboot
 }
 
-main_chroot() { configure_system; setup_bootloader; }
+main_chroot() {
+  configure_system
+  setup_bootloader
+}
 
 [[ "$1" == "chroot" ]] && main_chroot || main

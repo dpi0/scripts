@@ -1,24 +1,24 @@
 #!/usr/bin/env bash
 
-SSH_USER=$(logname 2>/dev/null || echo "$USER")
+SSH_USER=$(logname 2> /dev/null || echo "$USER")
 SSH_PORT=2249
 ALIVE_INTERVAL_SEC=180
 ALIVE_COUNT_MAX=3
 SSH_CONFIG_PATH="/etc/ssh/sshd_config"
 
-echo "███████╗███████╗██╗  ██╗";
-echo "██╔════╝██╔════╝██║  ██║";
-echo "███████╗███████╗███████║";
-echo "╚════██║╚════██║██╔══██║";
-echo "███████║███████║██║  ██║";
-echo "╚══════╝╚══════╝╚═╝  ╚═╝";
-echo "                        ";
+echo "███████╗███████╗██╗  ██╗"
+echo "██╔════╝██╔════╝██║  ██║"
+echo "███████╗███████╗███████║"
+echo "╚════██║╚════██║██╔══██║"
+echo "███████║███████║██║  ██║"
+echo "╚══════╝╚══════╝╚═╝  ╚═╝"
+echo "                        "
 
 # Ensure the user exists
-if ! id "$SSH_USER" &>/dev/null; then
-    echo "❌ Error: User '$SSH_USER' does not exist."
-    echo "➡️ Create it first: sudo useradd -m $SSH_USER && sudo passwd $SSH_USER"
-    exit 1
+if ! id "$SSH_USER" &> /dev/null; then
+  echo "❌ Error: User '$SSH_USER' does not exist."
+  echo "➡️ Create it first: sudo useradd -m $SSH_USER && sudo passwd $SSH_USER"
+  exit 1
 fi
 
 # Backup current SSH config
@@ -34,7 +34,7 @@ sudo truncate -s 0 "$SSH_CONFIG_PATH"
 
 # Write new SSH config
 echo "✍🏽️ Writing new SSH config..."
-sudo tee "$SSH_CONFIG_PATH" <<EOF
+sudo tee "$SSH_CONFIG_PATH" << EOF
 AuthorizedKeysFile %h/.ssh/authorized_keys
 Subsystem sftp internal-sftp
 Protocol 2
@@ -59,20 +59,20 @@ EOF
 # Validate SSH configuration before restarting
 echo "🔍 Validating new SSH config..."
 if ! sudo sshd -t; then
-    echo "❌ Error: SSH configuration test failed. Restoring previous config..."
-    sudo cp "$BACKUP_PATH" "$SSH_CONFIG_PATH"
-    sudo systemctl restart sshd || sudo systemctl restart ssh
-    exit 1
+  echo "❌ Error: SSH configuration test failed. Restoring previous config..."
+  sudo cp "$BACKUP_PATH" "$SSH_CONFIG_PATH"
+  sudo systemctl restart sshd || sudo systemctl restart ssh
+  exit 1
 fi
 
 # Detect the correct SSH service
 if systemctl list-unit-files | grep -q "sshd.service"; then
-    SSH_SERVICE="sshd"
+  SSH_SERVICE="sshd"
 elif systemctl list-unit-files | grep -q "ssh.service"; then
-    SSH_SERVICE="ssh"
+  SSH_SERVICE="ssh"
 else
-    echo "❌ Error: Neither 'sshd' nor 'ssh' service is available."
-    exit 1
+  echo "❌ Error: Neither 'sshd' nor 'ssh' service is available."
+  exit 1
 fi
 
 # Ensure firewall allows SSH

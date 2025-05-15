@@ -11,11 +11,11 @@ REMOTE_URL="https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/${GITHUB_USERN
 
 # Ensure the repository exists, clone if it doesn't
 if [[ ! -d "$REPO_PATH/.git" ]]; then
-  echo "Repository not found. Cloning..."
-  git clone --branch "$BRANCH" "$REMOTE_URL" "$REPO_PATH" || {
-    echo "Failed to clone repository"
-    exit 1
-  }
+	echo "Repository not found. Cloning..."
+	git clone --branch "$BRANCH" "$REMOTE_URL" "$REPO_PATH" || {
+		echo "Failed to clone repository"
+		exit 1
+	}
 fi
 
 cd "$REPO_PATH" || exit 1
