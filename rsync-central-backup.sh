@@ -2,10 +2,111 @@
 
 HOME=/home/dpi0
 ENV_FILE="$HOME/.scripts.env"
-[[ -f $ENV_FILE ]] && set -a && source "$ENV_FILE" && set +a || {
+
+for arg in "$@"; do
+  case $arg in
+    --config-file=*) ENV_FILE="${arg#*=}" ;;
+  esac
+done
+
+if [[ -f "$ENV_FILE" ]]; then
+  set -a
+  source "$ENV_FILE"
+  set +a
+else
   echo "❌ Env File: '$ENV_FILE' not found. Exiting." >&2
   exit 1
+fi
+
+for arg in "$@"; do
+  case $arg in
+    --config-file=*) ENV_FILE="${arg#*=}" ;;
+  esac
+done
+
+usage() {
+  cat << EOF
+Usage: $(basename "$0") [OPTIONS]
+
+Options:
+  --config-file=FILE          Path to env config file (default: \$HOME/.scripts.env)
+  --ssh-user=USER             SSH username (overrides SSH_USER from .env)
+  --ssh-host=HOST             SSH hostname or IP (overrides SSH_HOST from .env)
+  --ssh-port=PORT             SSH port (overrides SSH_PORT from .env)
+  --ssh-key=FILE              Path to SSH private key (overrides SSH_KEY from .env)
+  --base-dest=DIR             Local base destination for backups
+  --log-dir=DIR               Directory to store log files
+  --remote-dirs=DIR1,DIR2     Comma-separated list of remote directories to back up
+  --excluded-dirs=DIR1,DIR2   Comma-separated list of subpaths to exclude from rsync
+  --hooks-dir=DIR             Directory containing pre/post backup hook scripts
+  --pre-hook=SCRIPT           Local path to a pre-backup script to run on the remote
+  --post-hook=SCRIPT          Local path to a post-backup script to run on the remote
+  --help                      Show this help message and exit
+
+Example using a config file only (recommended):
+  $(basename "$0") --config-file=\$HOME/backup_plans/webserver.env
+
+Example webserver.env
+SSH_USER=backup
+SSH_HOST=192.168.1.100
+SSH_PORT=22
+SSH_KEY=/home/dpi0/.ssh/id_ed25519
+BASE_DEST=/mnt/backups
+LOG_DIR=/var/log/backups
+REMOTE_DIRS=("/etc" "/var/www")
+EXCLUDED_DIRS=("/var/www/cache")
+HOOKS_DIR=/home/dpi0/scripts/hooks
+PRE_BACKUP_HOOK_SCRIPT=/home/dpi0/scripts/pre_backup.sh
+POST_BACKUP_HOOK_SCRIPT=/home/dpi0/scripts/post_backup.sh
+
+Example without config file:
+  $(basename "$0") \\
+    --ssh-user=backup \\
+    --ssh-host=192.168.1.10 \\
+    --ssh-port=22 \\
+    --ssh-key=\$HOME/.ssh/id_ed25519 \\
+    --base-dest=/mnt/backups \\
+    --log-dir=/var/log/backups \\
+    --remote-dirs=/etc,/var/www \\
+    --excluded-dirs=/var/www/cache,/etc/ssl/private \\
+    --pre-hook=\$HOME/scripts/pre.sh \\
+    --post-hook=\$HOME/scripts/post.sh
+
+EOF
 }
+
+# Exit with usage if no arguments are passed
+if [[ $# -eq 0 ]]; then
+  usage
+  exit 0
+fi
+
+# Step 3: Override config values with any CLI args
+for arg in "$@"; do
+  case $arg in
+    --ssh-user=*) SSH_USER="${arg#*=}" ;;
+    --ssh-host=*) SSH_HOST="${arg#*=}" ;;
+    --ssh-port=*) SSH_PORT="${arg#*=}" ;;
+    --ssh-key=*) SSH_KEY="${arg#*=}" ;;
+    --base-dest=*) BASE_DEST="${arg#*=}" ;;
+    --log-dir=*) LOG_DIR="${arg#*=}" ;;
+    --remote-dirs=*) IFS=',' read -r -a REMOTE_DIRS <<< "${arg#*=}" ;;
+    --excluded-dirs=*) IFS=',' read -r -a EXCLUDED_DIRS <<< "${arg#*=}" ;;
+    --hooks-dir=*) HOOKS_DIR="${arg#*=}" ;;
+    --pre-hook=*) PRE_BACKUP_HOOK_SCRIPT="${arg#*=}" ;;
+    --post-hook=*) POST_BACKUP_HOOK_SCRIPT="${arg#*=}" ;;
+    --config-file=*) ;; # Already handled above
+    --help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "❌ Unknown option: $arg" >&2
+      usage
+      exit 1
+      ;;
+  esac
+done
 
 # TODO: maybe create a separate user on host for backups
 SSH_USER=$SSH_USER
