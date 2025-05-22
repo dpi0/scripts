@@ -6,6 +6,25 @@ ALIVE_INTERVAL_SEC=180
 ALIVE_COUNT_MAX=3
 SSH_CONFIG_PATH="/etc/ssh/sshd_config"
 
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --ssh-port)
+      if [[ -n $2 && $2 =~ ^[0-9]+$ ]]; then
+        SSH_PORT="$2"
+        shift 2
+      else
+        echo "❌ Error: --ssh-port requires a valid port number."
+        exit 1
+      fi
+      ;;
+    *)
+      echo "❌ Unknown argument: $1"
+      echo "ℹ️ Usage: $0 [--ssh-port <port>]"
+      exit 1
+      ;;
+  esac
+done
+
 echo "███████╗███████╗██╗  ██╗"
 echo "██╔════╝██╔════╝██║  ██║"
 echo "███████╗███████╗███████║"
