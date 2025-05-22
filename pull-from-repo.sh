@@ -67,16 +67,24 @@ if [ "$LOCAL_HASH" != "$REMOTE_HASH" ]; then
 
   # Run the mkdocs-builder if present and log, if not do nothing.
   if docker ps -a --format '{{.Names}}' | grep -q '^mkdocs-builder$'; then
+    SERVICE_NAME="mkdocs-builder"
+    log_info "🧹 Removing existing $SERVICE_NAME container..."
+    docker rm -f $SERVICE_NAME >> "$LOG_FILE" 2>&1 || {
+      log_err "Failed to remove existing $SERVICE_NAME container."
+      exit 1
+    }
+
     log_info "🟤 Building mkdocs-material site..."
 
-    docker start mkdocs-builder >> "$LOG_FILE" 2>&1 || {
+    COMPOSE_FILE="$HOME/cloudlab/services/mkdocs-nginx-serve/compose.yml"
+    docker compose -f "$COMPOSE_FILE" up --no-deps --force-recreate --detach "$SERVICE_NAME" >> "$LOG_FILE" 2>&1 || {
       log_err "MkDocs build failed."
       exit 1
     }
 
     log_info "🟢 mkdocs-material site built successfully!"
   else
-    log_info "🔴 mkdocs-builder service not defined. Skipping mkdocs-material build."
+    log_info "🔴 $SERVICE_NAME service not defined. Skipping mkdocs-material build."
   fi
 else
   log_info "🟡 No changes detected. Exiting."
