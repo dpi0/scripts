@@ -36,6 +36,7 @@ set_locale_and_timezone() {
 
 partitioning() {
   # sudo su
+  # instead run `sudo su` in kvm shell and only then run curl
   apt update && apt install -y debootstrap parted dosfstools arch-install-scripts
   parted -s "$DISK" mklabel gpt
   parted -s "$DISK" mkpart ESP fat32 1MiB 512MiB set 1 esp on
