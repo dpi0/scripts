@@ -52,6 +52,8 @@ echo "🧹 Clearing out existing SSH config..."
 sudo truncate -s 0 "$SSH_CONFIG_PATH"
 
 # Write new SSH config
+# NOTE: UsePAM yes, increases chance of unexpected behavior from PAM modules.
+# Strictly needed it for AWS ec2 instances
 echo "✍🏽️ Writing new SSH config..."
 sudo tee "$SSH_CONFIG_PATH" << EOF
 AuthorizedKeysFile %h/.ssh/authorized_keys
