@@ -3,13 +3,13 @@
 set -e
 
 DISK="/dev/vda"
-HOSTNAME="kvm-debian"
+HOSTNAME="debiankvm"
 LOCALE_LANG="en_US.UTF-8"
 TIMEZONE="Asia/Kolkata"
 KEYMAP="us"
-USERNAME="user"
+USERNAME="admin"
 USERGROUP="sudo"
-USER_PASSWORD="user"
+USER_PASSWORD="admin"
 
 check_root() { [[ $(id -u) -eq 0 ]] || {
   echo "ERROR: Run this script as root"

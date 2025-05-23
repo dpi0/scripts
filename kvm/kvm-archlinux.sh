@@ -4,15 +4,15 @@
 set -e
 
 DISK="/dev/vda"
-HOSTNAME="kvm-arch"
+HOSTNAME="archkvm"
 LOCALE_LANG_COMPLETE="en_US.UTF-8 UTF-8"
 LOCALE_LANG="en_US.UTF-8"
 TIMEZONE="Asia/Kolkata"
 KEYMAP="us"
 FONT="ter-132n"
-USERNAME="user"
+USERNAME="admin"
 USERGROUP="wheel"
-USER_PASSWORD="user"
+USER_PASSWORD="admin"
 # ROOT_PASSWORD="root"
 
 check_root() { [[ $(id -u) -eq 0 ]] || {
