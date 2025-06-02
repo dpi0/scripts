@@ -7,9 +7,6 @@ ENV_FILE="$HOME/.scripts.env"
   exit 1
 }
 
-TOKEN=${GOTIFY_CONTAINER_MANAGE_TOKEN}
-NOTIFY_SCRIPT="$HOME/scripts/helpers/notify.sh"
-
 if [ "$#" -eq 0 ]; then
   echo "🔴 No containers specified to start. Usage: $1 container1 container2 ..." >&2
   exit 1
@@ -30,14 +27,10 @@ done
 
 if [ "${#STARTED[@]}" -gt 0 ]; then
   "$NOTIFY_SCRIPT" \
-    --token "${TOKEN}" \
-    --title "🟢 Started some containers on $HOSTNAME" \
-    --message "Started: ${STARTED[*]}"
+    --message "🟢 Started some containers on $HOSTNAME. Started: ${STARTED[*]}"
 fi
 
 if [ "${#NOT_FOUND[@]}" -gt 0 ]; then
   "$NOTIFY_SCRIPT" \
-    --token "${TOKEN}" \
-    --title "🟡 No target containers were found to be running on $HOSTNAME." \
-    --message "Not found: ${NOT_FOUND[*]}"
+    --message "🟡 No target containers were found to be running on $HOSTNAME. Not found: ${NOT_FOUND[*]}"
 fi

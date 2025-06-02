@@ -7,8 +7,6 @@ ENV_FILE="$HOME/.scripts.env"
   exit 1
 }
 
-TOKEN=$GOTIFY_CONTAINER_MANAGE_TOKEN
-NOTIFY_SCRIPT="$HOME/scripts/helpers/notify.sh"
 IGNORE_CONTAINERS=("$@")
 
 FILTERS=()
@@ -24,12 +22,8 @@ if [ -n "$TO_STOP" ]; then
   STOPPED_NAMES=$(docker inspect --format '{{.Name}}' $TO_STOP 2> /dev/null | sed 's#^/##' | paste -sd ' ' -)
   docker stop $TO_STOP > /dev/null 2>&1
   "$NOTIFY_SCRIPT" \
-    --token "${TOKEN}" \
-    --title "🔴 Stopping some containers on $HOSTNAME..." \
-    --message "These services will be temporarily unavailable: $STOPPED_NAMES."
+    --message "🔴 Stopping some containers on $HOSTNAME. These services will be temporarily unavailable: $STOPPED_NAMES."
 else
   "$NOTIFY_SCRIPT" \
-    --token "${TOKEN}" \
-    --title "🟡 No target containers were running or found to stop on $HOSTNAME" \
-    --message "Nothing was stopped."
+    --message "🟡 No target containers were running or found to stop on $HOSTNAME" \
 fi

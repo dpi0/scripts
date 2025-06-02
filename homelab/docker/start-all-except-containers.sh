@@ -7,8 +7,6 @@ ENV_FILE="$HOME/.scripts.env"
   exit 1
 }
 
-TOKEN=$GOTIFY_CONTAINER_MANAGE_TOKEN
-NOTIFY_SCRIPT="$HOME/scripts/helpers/notify.sh"
 IGNORE_CONTAINERS=("$@")
 
 if [ ${#IGNORE_CONTAINERS[@]} -eq 0 ]; then
@@ -29,12 +27,8 @@ if [ -n "$TO_START" ]; then
   RESTARTED_NAMES=$(docker inspect --format '{{.Name}}' $TO_START 2> /dev/null | sed 's#^/##' | paste -sd ' ' -)
   docker start $TO_START > /dev/null 2>&1
   "$NOTIFY_SCRIPT" \
-    --token "${TOKEN}" \
-    --title "🟢 Starting some containers on $HOSTNAME" \
-    --message "Services will be working soon. $RESTARTED_NAMES."
+    --message "🟢 Starting some containers on $HOSTNAME. Services will be working soon. $RESTARTED_NAMES."
 else
   "$NOTIFY_SCRIPT" \
-    --token "${TOKEN}" \
-    --title "🟡 No containers were restarted on $HOSTNAME" \
-    --message "Nothing was started."
+    --message "🟡 No containers were restarted on $HOSTNAME" \
 fi

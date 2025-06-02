@@ -21,9 +21,7 @@ echo "CONTENT_PATH: $CONTENT_PATH" >> "$LOG_FILE"
 echo "CATEGORY: $CATEGORY" >> "$LOG_FILE"
 echo "PRIORITY: $PRIORITY" >> "$LOG_FILE"
 
-"$HOME/scripts/helpers/notify.sh" \
-  --token "$TOKEN" \
-  --title "📥 $TORRENT_NAME" \
-  --message "🟢 Media saved to $CONTENT_PATH"
+"$NOTIFY_SCRIPT" \
+  --message "📥 $TORRENT_NAME. Media saved to $CONTENT_PATH"
 
 echo "Notification sent successfully." >> "$LOG_FILE"
