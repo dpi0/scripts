@@ -14,6 +14,12 @@ LOCAL_SHARE_DIR="$HOME/.local/share"
 FONTS_DIR="$HOME/.local/share/fonts"
 MY_REPO="https://github.com/dpi0/fonts"
 
+if ! command -v git &> /dev/null; then
+  echo "🟥 'git' is not installed. Please install it manually. Exiting..."
+  exit 1
+fi
+echo "✅ git is present."
+
 mkdir -p "$LOCAL_SHARE_DIR"
 
 # Remove existing fonts directory (if any) and clone repo

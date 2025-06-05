@@ -14,6 +14,7 @@ PKG="tmux"
 
 MY_REPO="https://github.com/dpi0/sh"
 CONFIG_DIR="$HOME/.config"
+CONFIG_FILE="$HOME/.tmux.conf"
 SHELL_DIR="$HOME/sh"
 TIMESTAMP=$(date +"%d-%B-%Y_%H-%M-%S")
 
@@ -25,6 +26,11 @@ ALIASES=(
   "alias tk='tmux kill-session -t'"
   "alias tka='tmux kill-server'"
 )
+
+if ! command -v $PKG &> /dev/null; then
+  echo "🟥 'Tmux' is not installed. Please install it manually. Exiting..."
+  exit 1
+fi
 
 if ! command -v git &> /dev/null; then
   echo "🟥 'git' is not installed. Please install it manually. Exiting..."
@@ -42,22 +48,24 @@ stop_tmux_server() {
   fi
 }
 
+backup_pkg_config() {
+  if [ -f "$CONFIG_FILE" ]; then
+    TIMESTAMP=$(date +"%d-%B-%Y_%H-%M-%S")
+    mv "$CONFIG_FILE" "$CONFIG_FILE.$TIMESTAMP"
+    echo "⏳️ Existing config backed up to $CONFIG_FILE.$TIMESTAMP"
+  fi
+}
+
+deploy_pkg_config() {
+  echo "📥 Cloning $MY_REPO to $SHELL_DIR"
+  [ -d "$SHELL_DIR" ] && rm -rf "$SHELL_DIR"
+  git clone --depth 1 "${MY_REPO}.git" "$SHELL_DIR" &> /dev/null
+
+  echo "🔗 Symlinking $SHELL_DIR/tmux/tmux.conf to $HOME/.tmux.conf"
+  ln -s "$SHELL_DIR/tmux/tmux.conf" "$HOME/.tmux.conf"
+}
+
 stop_tmux_server
-
-if command -v $PKG &> /dev/null; then
-  echo "🟥 'Tmux' is not installed. Please install it manually. Exiting..."
-  exit 1
-fi
-
-# Backup existing config
-if [ -f "$CONFIG_FILE" ]; then
-  TIMESTAMP=$(date +"%d-%B-%Y_%H-%M-%S")
-  mv "$CONFIG_FILE" "$CONFIG_FILE.$TIMESTAMP"
-  echo "⏳️ Existing config backed up to $CONFIG_FILE.$TIMESTAMP"
-fi
-
-# Download  config
-curl -fsSL "$CONFIG_URL" -o "$CONFIG_FILE"
 
 # Install TPM
 echo "📥 Downloading TPM (TMUX Plugin Manager) to $HOME/.tmux/plugins/tpm"

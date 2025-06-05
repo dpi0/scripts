@@ -32,6 +32,12 @@ ALIASES=(
   "alias svim='sudo -E nvim'"
 )
 
+if ! command -v git &> /dev/null; then
+  echo "🟥 'git' is not installed. Please install it manually. Exiting..."
+  exit 1
+fi
+echo "✅ git is present."
+
 mkdir -p "$CONFIG_DIR"
 
 backup_pkg_config() {

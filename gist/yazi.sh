@@ -30,16 +30,16 @@ ALIASES=(
   "alias lf='yazi'"
 )
 
-mkdir -p "$CONFIG_DIR"
-
-TMP_DIR=$(mktemp -d)
-trap 'rm -rf "$TMP_DIR"' EXIT
-
 if ! command -v git &> /dev/null; then
   echo "🟥 'git' is not installed. Please install it manually. Exiting..."
   exit 1
 fi
 echo "✅ git is present."
+
+mkdir -p "$CONFIG_DIR"
+
+TMP_DIR=$(mktemp -d)
+trap 'rm -rf "$TMP_DIR"' EXIT
 
 echo "📥 Downloading $PKG $VERSION in $TMP_DIR via $DOWNLOAD_URL..."
 if ! curl -fsLo "$TMP_DIR/$ARCHIVE" "$DOWNLOAD_URL"; then
@@ -51,6 +51,7 @@ fi
 echo "📦 Extracting $ARCHIVE to $TMP_DIR..."
 if ! unzip -q "$TMP_DIR/$ARCHIVE" -d "$TMP_DIR"; then
   echo "🟥 Error: Failed to extract $ARCHIVE" >&2
+  echo "ℹ️ Perhaps you don't have 'unzip' installed which is needed to extract this $ARCHIVE archive."
   rm -rf "$TMP_DIR"
   exit 1
 fi
@@ -62,9 +63,9 @@ echo "🔹This will run : sudo cp '$TMP_DIR/yazi-x86_64-unknown-linux-musl/ya' '
 sudo cp "$TMP_DIR/yazi-x86_64-unknown-linux-musl/ya" "$TMP_DIR/yazi-x86_64-unknown-linux-musl/yazi" "$LOCAL_BIN_DIR"
 
 backup_pkg_config() {
-  if [ -d "$PKG_CONFIG_DIR" ]; then
-    mv "$PKG_CONFIG_DIR" "$PKG_CONFIG_DIR.$TIMESTAMP.old"
-    echo "⏳️ Existing config backed up to $PKG_CONFIG_DIR.$TIMESTAMP.old"
+  if [ -d "$CONFIG_DIR/$PKG" ]; then
+    mv "$CONFIG_DIR/$PKG" "$CONFIG_DIR/$PKG.$TIMESTAMP.old"
+    echo "⏳️ Existing config backed up to $CONFIG_DIR/$PKG.$TIMESTAMP.old"
   fi
 }
 
@@ -72,8 +73,9 @@ deploy_pkg_config() {
   echo "📥 Cloning $MY_REPO to $SHELL_DIR"
   [ -d "$SHELL_DIR" ] && rm -rf "$SHELL_DIR"
   git clone --depth 1 "${MY_REPO}.git" "$SHELL_DIR" &> /dev/null
-  echo "🔗 Symlinking $PKG_SHELL_DIR to $PKG_CONFIG_DIR"
-  ln -s "$PKG_SHELL_DIR" "$PKG_CONFIG_DIR"
+
+  echo "🔗 Symlinking $PKG_SHELL_DIR to $CONFIG_DIR/$PKG"
+  ln -s "$PKG_SHELL_DIR" "$CONFIG_DIR/$PKG"
 }
 
 backup_pkg_config

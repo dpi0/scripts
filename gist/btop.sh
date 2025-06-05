@@ -49,6 +49,7 @@ curl -fsSL --retry 3 --retry-delay 2 -o "$TMP_DIR/$ARCHIVE" "$DOWNLOAD_URL"
 echo "📦 Extracting $ARCHIVE..."
 if ! tar -xjf "$TMP_DIR/$ARCHIVE" -C "$TMP_DIR"; then
   echo "❌ Extraction failed for $ARCHIVE"
+  echo "ℹ️ Perhaps you don't have 'bzip2' installed which is needed to extract this $ARCHIVE archive."
   exit 1
 fi
 
