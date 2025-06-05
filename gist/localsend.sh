@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 echo "██╗      ██████╗  ██████╗ █████╗ ██╗     ███████╗███████╗███╗   ██╗██████╗ "
 echo "██║     ██╔═══██╗██╔════╝██╔══██╗██║     ██╔════╝██╔════╝████╗  ██║██╔══██╗"
 echo "██║     ██║   ██║██║     ███████║██║     ███████╗█████╗  ██╔██╗ ██║██║  ██║"
@@ -10,24 +12,27 @@ echo "                                                                          
 
 PKG="LocalSend"
 REPO="localsend/localsend"
+
 echo "🔍 Fetching latest version..."
 json=$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest")
 VERSION=$(echo "$json" | grep -m1 '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-APP="${PKG}-${VERSION#v}-linux-x86-64.AppImage"
-DOWNLOAD_URL="https://github.com/$REPO/releases/download/$VERSION/$APP"
-APPLICATIONS_DIR="$HOME/Applications"
+
+APPIMAGE="${PKG}-${VERSION#v}-linux-x86-64.AppImage"
+DOWNLOAD_URL="https://github.com/$REPO/releases/download/$VERSION/$APPIMAGE"
+LOCAL_BIN_DIR="$HOME/bin"
 LOCAL_SHARE_APPLICATIONS_DIR="$HOME/.local/share/applications"
-INSTALL_PATH="$APPLICATIONS_DIR"
 APP_GENERIC_NAME="File Share"
 
-mkdir -p "$APPLICATIONS_DIR" "$LOCAL_SHARE_APPLICATIONS_DIR"
+mkdir -p "$LOCAL_BIN_DIR" "$LOCAL_SHARE_APPLICATIONS_DIR"
 
-install_manually() {
-  local TMP_DIR=$(mktemp -d)
-  curl -fsLo "$TMP_DIR/$APP" "$DOWNLOAD_URL"
-  cp "$TMP_DIR/$APP" "$INSTALL_PATH"
-  rm -rf "$TMP_DIR"
-}
+TMP_DIR=$(mktemp -d)
+trap 'rm -rf "$TMP_DIR"' EXIT
+
+echo "📥 Downloading $PKG $VERSION via $DOWNLOAD_URL..."
+curl -fsLo "$TMP_DIR/$APPIMAGE" "$DOWNLOAD_URL"
+
+echo "🚀 Installing to $INSTALL_PATH..."
+cp "$TMP_DIR/$APPIMAGE" "$INSTALL_PATH"
 
 setup_desktop_entry() {
   echo "⚙️ Setting up desktop entry for ${PKG} in ${LOCAL_SHARE_APPLICATIONS_DIR}..."
@@ -35,25 +40,14 @@ setup_desktop_entry() {
 [Desktop Entry]
 Type=Application
 Name=${PKG}
-Exec=${APPLICATIONS_DIR}/${APP}
+Exec=${LOCAL_BIN_DIR}/${APPIMAGE}
 GenericName=${APP_GENERIC_NAME}
 Terminal=false
 EOF
 
-  chmod +x $APPLICATIONS_DIR/$APP
+  chmod +x $LOCAL_BIN_DIR/$APPIMAGE
   update-desktop-database "$LOCAL_SHARE_APPLICATIONS_DIR"
 }
-
-install_pkg() {
-  echo "🚀 Installing manually to $INSTALL_PATH..." && install_manually
-}
-
-if ls $HOME/Applications/LocalSend* &> /dev/null; then
-  echo "🟫 $PKG not found. Installing..."
-  install_pkg
-else
-  echo "🟨 $PKG is already installed."
-fi
 
 setup_desktop_entry
 

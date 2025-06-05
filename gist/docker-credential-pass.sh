@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 echo "██████╗  ██████╗  ██████╗██╗  ██╗███████╗██████╗        ██████╗██████╗ ███████╗██████╗ ███████╗███╗   ██╗████████╗██╗ █████╗ ██╗      ██████╗  █████╗ ███████╗███████╗"
 echo "██╔══██╗██╔═══██╗██╔════╝██║ ██╔╝██╔════╝██╔══██╗      ██╔════╝██╔══██╗██╔════╝██╔══██╗██╔════╝████╗  ██║╚══██╔══╝██║██╔══██╗██║      ██╔══██╗██╔══██╗██╔════╝██╔════╝"
 echo "██║  ██║██║   ██║██║     █████╔╝ █████╗  ██████╔╝█████╗██║     ██████╔╝█████╗  ██║  ██║█████╗  ██╔██╗ ██║   ██║   ██║███████║██║█████╗██████╔╝███████║███████╗███████╗"
@@ -10,31 +12,23 @@ echo "                                                                          
 
 PKG="docker-credential-pass"
 REPO="docker/docker-credential-helpers"
-LOCAL_BIN_DIR="$HOME/.local/bin"
-ARCHIVE="${PKG}-v${VERSION#v}.linux-amd64"
+
+echo "🔍 Fetching latest version..."
 json=$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest")
 VERSION=$(echo "$json" | grep -m1 '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-ARCHIVE="${PKG}_${VERSION#v}_Linux_x86_64.tar.gz"
+
+ARCHIVE="${PKG}-v${VERSION#v}.linux-amd64"
 DOWNLOAD_URL="https://github.com/$REPO/releases/download/$VERSION/$ARCHIVE"
 LOCAL_BIN_DIR="$HOME/.local/bin"
+
 mkdir -p "$LOCAL_BIN_DIR"
 
-install_manually() {
-  echo "📥 Downloading $PKG $VERSION via $DOWNLOAD_URL..."
-  curl -fsLo "$LOCAL_BIN_DIR/$PKG" "$DOWNLOAD_URL"
-  echo "🚀 Installing $PKG..."
-  chmod +x "$LOCAL_BIN_DIR/$PKG"
-}
+echo "📥 Downloading $PKG $VERSION via $DOWNLOAD_URL..."
+curl -fsLo "$LOCAL_BIN_DIR/$PKG" "$DOWNLOAD_URL"
 
-if ! command -v $PKG &> /dev/null; then
-  install_manually
-  echo -e "\n✅ $PKG installed successfully at $(command -v $PKG)"
-else
-  echo "🟡 $PKG is already installed at $(command -v $PKG). Skipping installation."
-  exit 0
-fi
+echo "🚀 Installing to $LOCAL_BIN_DIR..."
+chmod +x "$LOCAL_BIN_DIR/$PKG"
 
-# Ensure LOCAL_BIN_DIR is in PATH
 case ":$PATH:" in
   *":$LOCAL_BIN_DIR:"*) ;;
   *)

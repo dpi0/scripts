@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 echo "███████╗███████╗███████╗"
 echo "██╔════╝╚══███╔╝██╔════╝"
 echo "█████╗    ███╔╝ █████╗  "
@@ -10,55 +12,37 @@ echo "                        "
 
 PKG="fzf"
 REPO="junegunn/fzf"
+
 echo "🔍 Fetching latest version..."
 json=$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest")
 VERSION=$(echo "$json" | grep -m1 '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+
 ARCHIVE="${PKG}-${VERSION#v}-linux_amd64.tar.gz"
 DOWNLOAD_URL="https://github.com/$REPO/releases/download/$VERSION/$ARCHIVE"
 LOCAL_BIN_DIR="$HOME/.local/bin"
+
 mkdir -p "$LOCAL_BIN_DIR"
 
-install_manually() {
-  local TMP_DIR=$(mktemp -d)
-  echo "📥 Downloading $PKG $VERSION via $DOWNLOAD_URL..."
-  curl -fsSL --retry 3 --retry-delay 2 -o "$TMP_DIR/$ARCHIVE" "$DOWNLOAD_URL"
-  echo "📦 Extracting $ARCHIVE..."
-  if ! tar -xzf "$TMP_DIR/$ARCHIVE" -C "$TMP_DIR"; then
-    echo "❌ Extraction failed for $ARCHIVE"
-    rm -rf "$TMP_DIR"
-    exit 1
-  fi
-  echo "🚀 Installing to $LOCAL_BIN_DIR..."
-  if ! install -m 755 "$TMP_DIR/$PKG" "$LOCAL_BIN_DIR/$PKG"; then
-    echo "❌ Installation failed."
-    rm -rf "$TMP_DIR"
-    exit 1
-  fi
-  echo "🗑  Cleaning up..."
-  rm -rf "$TMP_DIR"
-}
+TMP_DIR=$(mktemp -d)
+trap 'rm -rf "$TMP_DIR"' EXIT
 
-if ! command -v $PKG &> /dev/null; then
-  if command -v apt &> /dev/null; then
-    install_manually
-  elif command -v pacman &> /dev/null; then
-    echo "🟨 Need superuser password to install $PKG using Pacman package manager..."
-    echo "🔹  sudo pacman -S --noconfirm $PKG"
-    sudo pacman -S --noconfirm $PKG
-  elif command -v dnf &> /dev/null; then
-    echo "🟨 Need superuser password to install $PKG using DNF package manager..."
-    echo "🔹  sudo dnf install -y $PKG"
-    sudo dnf install -y $PKG
-  else
-    echo "🟥 Unsupported system. Installing manually..." && install_manually
-  fi
-  echo -e "\n✅ $PKG installed successfully at $(command -v $PKG)"
-else
-  echo "🟡 $PKG is already installed at $(command -v $PKG). Skipping installation."
-  exit 0
+echo "📥 Downloading $PKG $VERSION via $DOWNLOAD_URL..."
+curl -fsSL --retry 3 --retry-delay 2 -o "$TMP_DIR/$ARCHIVE" "$DOWNLOAD_URL"
+
+echo "📦 Extracting $ARCHIVE..."
+if ! tar -xzf "$TMP_DIR/$ARCHIVE" -C "$TMP_DIR"; then
+  echo "❌ Extraction failed for $ARCHIVE"
+  rm -rf "$TMP_DIR"
+  exit 1
 fi
 
-# Ensure LOCAL_BIN_DIR is in PATH
+echo "🚀 Installing to $LOCAL_BIN_DIR..."
+if ! install -m 755 "$TMP_DIR/$PKG" "$LOCAL_BIN_DIR/$PKG"; then
+  echo "❌ Installation failed."
+  rm -rf "$TMP_DIR"
+  exit 1
+fi
+
 case ":$PATH:" in
   *":$LOCAL_BIN_DIR:"*) ;;
   *)

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 echo " ██████╗ ██╗████████╗"
 echo "██╔════╝ ██║╚══██╔══╝"
 echo "██║  ███╗██║   ██║   "
@@ -9,52 +11,42 @@ echo " ╚═════╝ ╚═╝   ╚═╝   "
 echo "                     "
 
 HOME_DIR="${HOME:-$(eval echo ~$(whoami))}"
+GIT_CONFIG_DIR="$HOME_DIR/.config/git"
 TIMESTAMP=$(date +"%d-%B-%Y_%H-%M-%S")
 MY_REPO="https://github.com/dpi0/sh"
 
-install_dependencies() {
-  command -v git &> /dev/null && echo -e "✅ git already installed. Skipping installation.\n" && return 0
-  echo "📥 Installing git..."
-  for c in apt pacman dnf; do
-    if command -v $c &> /dev/null; then
-      cmd="sudo $c $([ $c = pacman ] && echo -S --noconfirm --needed || echo install -y) git"
-      echo "🟨 Running: $cmd"
-      eval $cmd && echo "🎉 Installed!" && return 0
-    fi
-  done
-  echo "🟥 Unsupported package manager"
-  return 1
-}
+mkdir -p "$GIT_CONFIG_DIR"
 
-install_dependencies
-
-for file in .gitattributes .gitconfig; do
-  echo "🔍  Checking if $file exists in \$HOME_DIR..."
-  if [[ -f "$HOME_DIR/$file" ]]; then
-    echo "📦 Found $file. Creating backup..."
-    mv "$HOME_DIR/$file" "$HOME_DIR/${file}.bak.$TIMESTAMP"
-    echo "✅ Backup created: $HOME_DIR/${file}.bak.$TIMESTAMP"
-  else
-    echo "🟡  $file not found. Skipping backup."
-  fi
-done
-
-echo "📥  Downloading ${MY_REPO}/raw/main/git/.gitattributes..."
-curl -fsSL "${MY_REPO}/raw/main/git/.gitattributes" -o "$HOME_DIR/.gitattributes" || {
-  echo "❌ Failed to download .gitattributes"
+if ! command -v git &> /dev/null; then
+  echo "🟥 'git' is not installed. Please install it manually. Exiting..."
   exit 1
-}
+fi
+echo "✅ git is present."
 
-echo "📥  Downloading ${MY_REPO}/raw/main/git/.gitconfig..."
-curl -fsSL "${MY_REPO}/raw/main/git/.gitconfig" -o "$HOME_DIR/.gitconfig" || {
+if [[ -f "$HOME_DIR/.gitconfig" ]]; then
+  echo "📦 Found existing git .gitconfig. Backing up..."
+  mv "$HOME_DIR/.gitconfig" "$HOME_DIR/.gitconfig.bak.$TIMESTAMP"
+  echo "✅ Backup created: $HOME_DIR/.gitconfig.bak.$TIMESTAMP"
+else
+  echo "🟡 No existing git config found."
+fi
+
+if [[ -f "$GIT_CONFIG_DIR/config" ]]; then
+  echo "📦 Found existing git config. Backing up..."
+  mv "$GIT_CONFIG_DIR/config" "$GIT_CONFIG_DIR/config.bak.$TIMESTAMP"
+  echo "✅ Backup created: $GIT_CONFIG_DIR/config.bak.$TIMESTAMP"
+else
+  echo "🟡 No existing git config found."
+fi
+
+echo "📥 Downloading git config..."
+curl -fsSL "${MY_REPO}/raw/main/git/.gitconfig" -o "$GIT_CONFIG_DIR/config" || {
   echo "❌ Failed to download .gitconfig"
   exit 1
 }
 
-echo "🔹 Validating .gitconfig with 'git config --list'..."
-git config --list > /dev/null || {
-  echo "❌ Invalid .gitconfig detected"
+echo "🔹 Validating config..."
+git config --global --list &> /dev/null || {
+  echo "❌ Invalid .gitconfig"
   exit 1
 }
-
-echo "✅ .gitconfig and .gitattributes have been setup successfully!"

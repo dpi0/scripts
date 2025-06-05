@@ -1,52 +1,48 @@
 #!/usr/bin/env bash
 
-echo "███████╗██╗   ██╗██╗██╗         ██╗  ██╗███████╗██╗     ██╗██╗  ██╗";
-echo "██╔════╝██║   ██║██║██║         ██║  ██║██╔════╝██║     ██║╚██╗██╔╝";
-echo "█████╗  ██║   ██║██║██║         ███████║█████╗  ██║     ██║ ╚███╔╝ ";
-echo "██╔══╝  ╚██╗ ██╔╝██║██║         ██╔══██║██╔══╝  ██║     ██║ ██╔██╗ ";
-echo "███████╗ ╚████╔╝ ██║███████╗    ██║  ██║███████╗███████╗██║██╔╝ ██╗";
-echo "╚══════╝  ╚═══╝  ╚═╝╚══════╝    ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝╚═╝  ╚═╝";
-echo "                                                                   ";
+set -euo pipefail
+
+echo "███████╗██╗   ██╗██╗██╗         ██╗  ██╗███████╗██╗     ██╗██╗  ██╗"
+echo "██╔════╝██║   ██║██║██║         ██║  ██║██╔════╝██║     ██║╚██╗██╔╝"
+echo "█████╗  ██║   ██║██║██║         ███████║█████╗  ██║     ██║ ╚███╔╝ "
+echo "██╔══╝  ╚██╗ ██╔╝██║██║         ██╔══██║██╔══╝  ██║     ██║ ██╔██╗ "
+echo "███████╗ ╚████╔╝ ██║███████╗    ██║  ██║███████╗███████╗██║██╔╝ ██╗"
+echo "╚══════╝  ╚═══╝  ╚═╝╚══════╝    ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝╚═╝  ╚═╝"
+echo "                                                                   "
 
 PKG="evil-helix"
 REPO="usagi-flow/evil-helix"
+
 echo "🔍 Fetching latest version..."
 json=$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest")
 VERSION=$(echo "$json" | grep -m1 '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+
 ARCHIVE="evil-helix-amd64-linux.tar.gz"
 DOWNLOAD_URL="https://github.com/$REPO/releases/download/$VERSION/$ARCHIVE"
 LOCAL_BIN_DIR="$HOME/.local/bin"
+
 mkdir -p "$LOCAL_BIN_DIR"
 
-install_manually() {
-  local TMP_DIR=$(mktemp -d)
-  echo "📥 Downloading $PKG $VERSION via $DOWNLOAD_URL..."
-  curl -fsSL --retry 3 --retry-delay 2 -o "$TMP_DIR/$ARCHIVE" "$DOWNLOAD_URL"
-  echo "📦 Extracting $ARCHIVE..."
-  if ! tar -xzf "$TMP_DIR/$ARCHIVE" -C "$TMP_DIR"; then
-    echo "❌ Extraction failed for $ARCHIVE"
-    rm -rf "$TMP_DIR"
-    exit 1
-  fi
-  echo "🚀 Installing to $LOCAL_BIN_DIR..."
-  if ! ln -sv "$TMP_DIR/helix/hx" "$LOCAL_BIN_DIR/hx"; then
-    echo "❌ Installation failed."
-    rm -rf "$TMP_DIR"
-    exit 1
-  fi
-  echo "🗑  Cleaning up..."
-  rm -rf "$TMP_DIR"
-}
+TMP_DIR=$(mktemp -d)
+trap 'rm -rf "$TMP_DIR"' EXIT
 
-if ! command -v hx &> /dev/null; then
-  install_manually
-  echo -e "\n✅ $PKG installed successfully at $(command -v $PKG)"
-else
-  echo "🟡 $PKG is already installed at $(command -v $PKG). Skipping installation."
-  exit 0
+echo "📥 Downloading $PKG $VERSION via $DOWNLOAD_URL..."
+curl -fsSL --retry 3 --retry-delay 2 -o "$TMP_DIR/$ARCHIVE" "$DOWNLOAD_URL"
+
+echo "📦 Extracting $ARCHIVE..."
+if ! tar -xzf "$TMP_DIR/$ARCHIVE" -C "$TMP_DIR"; then
+  echo "❌ Extraction failed for $ARCHIVE"
+  rm -rf "$TMP_DIR"
+  exit 1
 fi
 
-# Ensure LOCAL_BIN_DIR is in PATH
+echo "🚀 Installing to $LOCAL_BIN_DIR..."
+if ! ln -sv "$TMP_DIR/helix/hx" "$LOCAL_BIN_DIR/hx"; then
+  echo "❌ Installation failed."
+  rm -rf "$TMP_DIR"
+  exit 1
+fi
+
 case ":$PATH:" in
   *":$LOCAL_BIN_DIR:"*) ;;
   *)
