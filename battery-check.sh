@@ -30,7 +30,7 @@ notify() {
     -h string:hlcolor:"$color" \
     "$title" "$message"
 
-  "$HOME/scripts/helpers/notify.sh" --token "$TOKEN" --title "$title" --message "$message"
+  "$NOTIFY_SCRIPT" --message "$message"
   log "Notification: $title - $message"
 }
 
