@@ -65,6 +65,8 @@ deploy_pkg_config() {
   ln -s "$SHELL_DIR/tmux/tmux.conf" "$HOME/.tmux.conf"
 }
 
+backup_pkg_config
+deploy_pkg_config
 stop_tmux_server
 
 # Install TPM
@@ -77,3 +79,5 @@ printf "\"%s\" " "${ALIASES[@]}"
 echo ">> \"\$HOME/.\$(basename \$SHELL)rc\""
 echo "🔹 Then apply changes with:"
 echo "    source \"\$HOME/.\$(basename \$SHELL)rc\""
+
+echo -e "ℹ️ To install the list of plugins present in $SHELL_DIR/tmux/plugins.conf, hit 'prefix + ALT+i' to install. where my current prefix is 'ALT+n'"
