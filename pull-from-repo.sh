@@ -2,6 +2,13 @@
 
 # Pulls the latest changes from a specified GitHub repository using a fine-grained token
 
+USER_ENTRY=$(getent passwd 1000) || {
+  echo "❌ No user with UID 1000 found. Exiting." >&2
+  exit 1
+}
+USERNAME=$(echo "$USER_ENTRY" | cut -d: -f1)
+HOME=$(echo "$USER_ENTRY" | cut -d: -f6)
+
 ENV_FILE="$HOME/.scripts.env"
 [[ -f $ENV_FILE ]] && set -a && source "$ENV_FILE" && set +a || {
   echo "❌ Env File: '$ENV_FILE' not found. Exiting." >&2
