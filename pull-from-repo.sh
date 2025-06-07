@@ -38,6 +38,9 @@ if [[ ! -d "$REPO_PATH/.git" ]]; then
     log_err "🔴 Failed to clone repository."
     exit 1
   }
+else
+  # Safe directory addition for root
+  git config --system --add safe.directory "$REPO_PATH"
 fi
 
 cd "$REPO_PATH" || {
