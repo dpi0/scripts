@@ -30,7 +30,7 @@ ALIASES=(
   "alias lf='yazi'"
 )
 
-if ! command -v git &> /dev/null; then
+if ! command -v git &>/dev/null; then
   echo "🟥 'git' is not installed. Please install it manually. Exiting..."
   exit 1
 fi
@@ -41,7 +41,7 @@ mkdir -p "$CONFIG_DIR"
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
 
-echo "📥 Downloading $PKG $VERSION in $TMP_DIR via $DOWNLOAD_URL..."
+echo "📥 Downloading $PKG $VERSION via $DOWNLOAD_URL..."
 if ! curl -fsLo "$TMP_DIR/$ARCHIVE" "$DOWNLOAD_URL"; then
   echo "🟥 Error: Failed to download $PKG from $DOWNLOAD_URL" >&2
   rm -rf "$TMP_DIR"
@@ -72,10 +72,10 @@ backup_pkg_config() {
 deploy_pkg_config() {
   echo "📥 Cloning $MY_REPO to $SHELL_DIR"
   [ -d "$SHELL_DIR" ] && rm -rf "$SHELL_DIR"
-  git clone --depth 1 "${MY_REPO}.git" "$SHELL_DIR" &> /dev/null
+  git clone --depth 1 "${MY_REPO}.git" "$SHELL_DIR" &>/dev/null
 
-  echo "🔗 Symlinking $PKG_SHELL_DIR to $CONFIG_DIR/$PKG"
-  ln -s "$PKG_SHELL_DIR" "$CONFIG_DIR/$PKG"
+  echo "🔗 Symlinking $SHELL_DIR/$PKG to $CONFIG_DIR/$PKG"
+  ln -s "$SHELL_DIR/$PKG" "$CONFIG_DIR/$PKG"
 }
 
 backup_pkg_config
