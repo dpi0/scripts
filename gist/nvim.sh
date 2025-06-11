@@ -21,39 +21,37 @@ ARCHIVE="${PKG}-linux-x86_64.tar.gz"
 DOWNLOAD_URL="https://github.com/$REPO/releases/download/$VERSION/$ARCHIVE"
 
 INSTALL_DIR="/opt"
-MY_REPO="https://github.com/dpi0/sh"
+MY_REPO="https://github.com/dpi0/nvim"
 CONFIG_DIR="$HOME/.config"
-SHELL_DIR="$HOME/sh"
 TIMESTAMP=$(date +"%d-%B-%Y_%H-%M-%S")
 
 ALIASES=(
-  "alias v='nvim'"
-  "alias vim="nvim""
-  "alias svim='sudo -E nvim'"
+	"alias v='nvim'"
+	"alias vim="nvim""
+	"alias svim='sudo -E nvim'"
 )
 
-if ! command -v git &> /dev/null; then
-  echo "🟥 'git' is not installed. Please install it manually. Exiting..."
-  exit 1
+if ! command -v git &>/dev/null; then
+	echo "🟥 'git' is not installed. Please install it manually. Exiting..."
+	exit 1
 fi
 echo "✅ git is present."
 
 mkdir -p "$CONFIG_DIR"
 
 backup_pkg_config() {
-  if [ -d "$CONFIG_DIR/$PKG" ]; then
-    mv "$CONFIG_DIR/$PKG" "$CONFIG_DIR/$PKG.$TIMESTAMP"
-    echo "⏳️ Existing config backed up to $CONFIG_DIR/$PKG.$TIMESTAMP"
-  fi
+	if [ -d "$CONFIG_DIR/$PKG" ]; then
+		mv "$CONFIG_DIR/$PKG" "$CONFIG_DIR/$PKG.$TIMESTAMP"
+		echo "⏳️ Existing config backed up to $CONFIG_DIR/$PKG.$TIMESTAMP"
+	fi
 }
 
 deploy_pkg_config() {
-  echo "📥 Cloning $MY_REPO to $SHELL_DIR"
-  [ -d "$SHELL_DIR" ] && rm -rf "$SHELL_DIR"
-  git clone --depth 1 "${MY_REPO}.git" "$SHELL_DIR" &> /dev/null
+	echo "📥 Cloning $MY_REPO to $CONFIG_DIR"
+	git clone --depth 1 "${MY_REPO}.git" "$CONFIG_DIR" &>/dev/null
 
-  echo "🔗 Symlinking $SHELL_DIR/$PKG to $CONFIG_DIR/$PKG"
-  ln -s "$SHELL_DIR/$PKG" "$CONFIG_DIR/$PKG"
+	# echo "🔗 Symlinking $CONFIG_DIR/$PKG to $CONFIG_DIR/$PKG"
+	# ln -s "$CONFIG_DIR/$PKG" "$CONFIG_DIR/$PKG"
 }
 
 TMP_DIR=$(mktemp -d)
@@ -64,9 +62,9 @@ curl -fsSL --retry 3 --retry-delay 2 -o "$TMP_DIR/$ARCHIVE" "$DOWNLOAD_URL"
 
 echo "📦 Extracting $ARCHIVE..."
 if ! tar -xzf "$TMP_DIR/$ARCHIVE" -C "$TMP_DIR"; then
-  echo "❌ Extraction failed for $ARCHIVE"
-  rm -rf "$TMP_DIR"
-  exit 1
+	echo "❌ Extraction failed for $ARCHIVE"
+	rm -rf "$TMP_DIR"
+	exit 1
 fi
 
 echo "🚀 Installing to $INSTALL_DIR..."
