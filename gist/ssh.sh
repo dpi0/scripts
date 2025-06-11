@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SSH_USER=$(logname 2> /dev/null || echo "$USER")
+SSH_USER=$(logname 2>/dev/null || echo "$USER")
 SSH_USER_GROUP=sshusers
 SSH_PORT=2249
 ALIVE_INTERVAL_SEC=180
@@ -8,22 +8,22 @@ ALIVE_COUNT_MAX=3
 SSH_CONFIG_PATH="/etc/ssh/sshd_config"
 
 while [[ $# -gt 0 ]]; do
-  case $1 in
-    --ssh-port)
-      if [[ -n $2 && $2 =~ ^[0-9]+$ ]]; then
-        SSH_PORT="$2"
-        shift 2
-      else
-        echo "❌ Error: --ssh-port requires a valid port number."
-        exit 1
-      fi
-      ;;
-    *)
-      echo "❌ Unknown argument: $1"
-      echo "ℹ️ Usage: $0 [--ssh-port <port>]"
-      exit 1
-      ;;
-  esac
+	case $1 in
+	--ssh-port)
+		if [[ -n $2 && $2 =~ ^[0-9]+$ ]]; then
+			SSH_PORT="$2"
+			shift 2
+		else
+			echo "❌ Error: --ssh-port requires a valid port number."
+			exit 1
+		fi
+		;;
+	*)
+		echo "❌ Unknown argument: $1"
+		echo "ℹ️ Usage: $0 [--ssh-port <port>]"
+		exit 1
+		;;
+	esac
 done
 
 echo "███████╗███████╗██╗  ██╗"
@@ -35,10 +35,10 @@ echo "╚══════╝╚══════╝╚═╝  ╚═╝"
 echo "                        "
 
 # Ensure the user exists
-if ! id "$SSH_USER" &> /dev/null; then
-  echo "❌ Error: User '$SSH_USER' does not exist."
-  echo "➡️ Create it first: sudo useradd -m $SSH_USER && sudo passwd $SSH_USER"
-  exit 1
+if ! id "$SSH_USER" &>/dev/null; then
+	echo "❌ Error: User '$SSH_USER' does not exist."
+	echo "➡️ Create it first: sudo useradd -m $SSH_USER && sudo passwd $SSH_USER"
+	exit 1
 fi
 
 # Backup current SSH config
@@ -56,7 +56,7 @@ sudo truncate -s 0 "$SSH_CONFIG_PATH"
 # NOTE: UsePAM yes, increases chance of unexpected behavior from PAM modules.
 # Strictly needed it for AWS ec2 instances
 echo "✍🏽️ Writing new SSH config..."
-sudo tee "$SSH_CONFIG_PATH" << EOF
+sudo tee "$SSH_CONFIG_PATH" <<EOF
 # Specifies the file within the user's home directory where public keys are stored 
 # for authentication. The %h is replaced with the user's home directory. This tells 
 # the SSH server to look for authorized public keys in ~/.ssh/authorized_keys.
@@ -147,7 +147,7 @@ ClientAliveCountMax $ALIVE_COUNT_MAX
 # This helps mitigate brute-force attacks by reducing the time window for guessing credentials.
 MaxAuthTries 2
 
-# Limits the number of multiplexed SSH sessions (e.g., via `ControlMaster`) 
+# Limits the number of multiplexed SSH sessions (e.g., via $(ControlMaster)) 
 # per network connection to 2. This restricts how many concurrent channels 
 # (like shell, exec, or port forwarding) a user can open at once.
 MaxSessions 2
@@ -168,7 +168,7 @@ AllowStreamLocalForwarding no
 # preventing users from exposing internal services externally via GatewayPorts.
 GatewayPorts no
 
-# Prevents users from creating IP-level tunnels (e.g., with `ssh -w` for tun/tap devices).
+# Prevents users from creating IP-level tunnels (e.g., with $(ssh -w) for tun/tap devices).
 # Disabling this hardens the server against abuse of VPN-like features via SSH.
 PermitTunnel no
 
@@ -183,20 +183,20 @@ EOF
 # Validate SSH configuration before restarting
 echo "🔍 Validating new SSH config..."
 if ! sudo sshd -t; then
-  echo "❌ Error: SSH configuration test failed. Restoring previous config..."
-  sudo cp "$BACKUP_PATH" "$SSH_CONFIG_PATH"
-  sudo systemctl restart sshd || sudo systemctl restart ssh
-  exit 1
+	echo "❌ Error: SSH configuration test failed. Restoring previous config..."
+	sudo cp "$BACKUP_PATH" "$SSH_CONFIG_PATH"
+	sudo systemctl restart sshd || sudo systemctl restart ssh
+	exit 1
 fi
 
 # Detect the correct SSH service
 if systemctl list-unit-files | grep -q "sshd.service"; then
-  SSH_SERVICE="sshd"
+	SSH_SERVICE="sshd"
 elif systemctl list-unit-files | grep -q "ssh.service"; then
-  SSH_SERVICE="ssh"
+	SSH_SERVICE="ssh"
 else
-  echo "❌ Error: Neither 'sshd' nor 'ssh' service is available."
-  exit 1
+	echo "❌ Error: Neither 'sshd' nor 'ssh' service is available."
+	exit 1
 fi
 
 # Ensure firewall allows SSH

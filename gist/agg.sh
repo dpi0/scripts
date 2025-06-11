@@ -31,16 +31,16 @@ chmod +x "$LOCAL_BIN_DIR/$ARCHIVE"
 mv "$LOCAL_BIN_DIR/$ARCHIVE" "$LOCAL_BIN_DIR/$PKG"
 
 case ":$PATH:" in
-  *":$LOCAL_BIN_DIR:"*) ;;
-  *)
-    echo -e "\n⚠️ In order to run $PKG, Add $LOCAL_BIN_DIR to your PATH:"
-    echo "   export PATH=\"$LOCAL_BIN_DIR:\$PATH\""
-    echo "🟡 This is temporary and will not persist after you exit this shell session."
-    echo -e "\nℹ️ To permanently add $LOCAL_BIN_DIR to your PATH, follow the instructions for your shell:"
-    echo "🔹 Bash (Linux/macOS):   echo 'export PATH=\"\$HOME/.local/bin:\$PATH\"' >> ~/.bashrc && source ~/.bashrc"
-    echo "🔹 Zsh (macOS/Linux):    echo 'export PATH=\"\$HOME/.local/bin:\$PATH\"' >> ~/.zshrc && source ~/.zshrc"
-    echo "🔹 Fish shell:           echo 'set -Ux fish_user_paths \$HOME/.local/bin \$fish_user_paths' >> ~/.config/fish/config.fish"
-    echo "🔹 General (if unsure):  echo 'export PATH=\"\$HOME/.local/bin:\$PATH\"' >> ~/.profile && source ~/.profile"
-    echo -e "\n⏩ After this, restart your terminal or run 'exec \$SHELL' to apply changes."
-    ;;
+*":$LOCAL_BIN_DIR:"*) ;;
+*)
+	echo -e "\n⚠️ In order to run $PKG, Add $LOCAL_BIN_DIR to your PATH:"
+	echo "   export PATH=\"$LOCAL_BIN_DIR:\$PATH\""
+	echo "🟡 This is temporary and will not persist after you exit this shell session."
+	echo -e "\nℹ️ To permanently add $LOCAL_BIN_DIR to your PATH, follow the instructions for your shell:"
+	echo "🔹 Bash (Linux/macOS):   echo 'export PATH=\"\$HOME/.local/bin:\$PATH\"' >> ~/.bashrc && source ~/.bashrc"
+	echo "🔹 Zsh (macOS/Linux):    echo 'export PATH=\"\$HOME/.local/bin:\$PATH\"' >> ~/.zshrc && source ~/.zshrc"
+	echo "🔹 Fish shell:           echo 'set -Ux fish_user_paths \$HOME/.local/bin \$fish_user_paths' >> ~/.config/fish/config.fish"
+	echo "🔹 General (if unsure):  echo 'export PATH=\"\$HOME/.local/bin:\$PATH\"' >> ~/.profile && source ~/.profile"
+	echo -e "\n⏩ After this, restart your terminal or run 'exec \$SHELL' to apply changes."
+	;;
 esac

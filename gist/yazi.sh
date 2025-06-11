@@ -27,12 +27,12 @@ TIMESTAMP=$(date +"%d-%B-%Y_%H-%M-%S")
 LOCAL_BIN_DIR="/usr/local/bin"
 
 ALIASES=(
-  "alias lf='yazi'"
+	"alias lf='yazi'"
 )
 
 if ! command -v git &>/dev/null; then
-  echo "🟥 'git' is not installed. Please install it manually. Exiting..."
-  exit 1
+	echo "🟥 'git' is not installed. Please install it manually. Exiting..."
+	exit 1
 fi
 echo "✅ git is present."
 
@@ -43,17 +43,17 @@ trap 'rm -rf "$TMP_DIR"' EXIT
 
 echo "📥 Downloading $PKG $VERSION via $DOWNLOAD_URL..."
 if ! curl -fsLo "$TMP_DIR/$ARCHIVE" "$DOWNLOAD_URL"; then
-  echo "🟥 Error: Failed to download $PKG from $DOWNLOAD_URL" >&2
-  rm -rf "$TMP_DIR"
-  exit 1
+	echo "🟥 Error: Failed to download $PKG from $DOWNLOAD_URL" >&2
+	rm -rf "$TMP_DIR"
+	exit 1
 fi
 
 echo "📦 Extracting $ARCHIVE to $TMP_DIR..."
 if ! unzip -q "$TMP_DIR/$ARCHIVE" -d "$TMP_DIR"; then
-  echo "🟥 Error: Failed to extract $ARCHIVE" >&2
-  echo "ℹ️ Perhaps you don't have 'unzip' installed which is needed to extract this $ARCHIVE archive."
-  rm -rf "$TMP_DIR"
-  exit 1
+	echo "🟥 Error: Failed to extract $ARCHIVE" >&2
+	echo "ℹ️ Perhaps you don't have 'unzip' installed which is needed to extract this $ARCHIVE archive."
+	rm -rf "$TMP_DIR"
+	exit 1
 fi
 
 echo "🚀 Installing to $LOCAL_BIN_DIR..."
@@ -63,19 +63,19 @@ echo "🔹This will run : sudo cp '$TMP_DIR/yazi-x86_64-unknown-linux-musl/ya' '
 sudo cp "$TMP_DIR/yazi-x86_64-unknown-linux-musl/ya" "$TMP_DIR/yazi-x86_64-unknown-linux-musl/yazi" "$LOCAL_BIN_DIR"
 
 backup_pkg_config() {
-  if [ -d "$CONFIG_DIR/$PKG" ]; then
-    mv "$CONFIG_DIR/$PKG" "$CONFIG_DIR/$PKG.$TIMESTAMP.old"
-    echo "⏳️ Existing config backed up to $CONFIG_DIR/$PKG.$TIMESTAMP.old"
-  fi
+	if [ -d "$CONFIG_DIR/$PKG" ]; then
+		mv "$CONFIG_DIR/$PKG" "$CONFIG_DIR/$PKG.$TIMESTAMP.old"
+		echo "⏳️ Existing config backed up to $CONFIG_DIR/$PKG.$TIMESTAMP.old"
+	fi
 }
 
 deploy_pkg_config() {
-  echo "📥 Cloning $MY_REPO to $SHELL_DIR"
-  [ -d "$SHELL_DIR" ] && rm -rf "$SHELL_DIR"
-  git clone --depth 1 "${MY_REPO}.git" "$SHELL_DIR" &>/dev/null
+	echo "📥 Cloning $MY_REPO to $SHELL_DIR"
+	[ -d "$SHELL_DIR" ] && rm -rf "$SHELL_DIR"
+	git clone --depth 1 "${MY_REPO}.git" "$SHELL_DIR" &>/dev/null
 
-  echo "🔗 Symlinking $SHELL_DIR/$PKG to $CONFIG_DIR/$PKG"
-  ln -s "$SHELL_DIR/$PKG" "$CONFIG_DIR/$PKG"
+	echo "🔗 Symlinking $SHELL_DIR/$PKG to $CONFIG_DIR/$PKG"
+	ln -s "$SHELL_DIR/$PKG" "$CONFIG_DIR/$PKG"
 }
 
 backup_pkg_config

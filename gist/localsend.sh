@@ -35,8 +35,8 @@ echo "🚀 Installing to $INSTALL_PATH..."
 cp "$TMP_DIR/$APPIMAGE" "$INSTALL_PATH"
 
 setup_desktop_entry() {
-  echo "⚙️ Setting up desktop entry for ${PKG} in ${LOCAL_SHARE_APPLICATIONS_DIR}..."
-  tee -a ${LOCAL_SHARE_APPLICATIONS_DIR}/${PKG}.desktop << EOF
+	echo "⚙️ Setting up desktop entry for ${PKG} in ${LOCAL_SHARE_APPLICATIONS_DIR}..."
+	tee -a ${LOCAL_SHARE_APPLICATIONS_DIR}/${PKG}.desktop <<EOF
 [Desktop Entry]
 Type=Application
 Name=${PKG}
@@ -45,8 +45,8 @@ GenericName=${APP_GENERIC_NAME}
 Terminal=false
 EOF
 
-  chmod +x $LOCAL_BIN_DIR/$APPIMAGE
-  update-desktop-database "$LOCAL_SHARE_APPLICATIONS_DIR"
+	chmod +x $LOCAL_BIN_DIR/$APPIMAGE
+	update-desktop-database "$LOCAL_SHARE_APPLICATIONS_DIR"
 }
 
 setup_desktop_entry

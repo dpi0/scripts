@@ -24,7 +24,7 @@ LOCAL_BIN_DIR="$HOME/.local/bin"
 mkdir -p "$LOCAL_BIN_DIR"
 
 ALIASES=(
-  "alias lc='lazydocker'"
+	"alias lc='lazydocker'"
 )
 
 TMP_DIR=$(mktemp -d)
@@ -35,16 +35,16 @@ curl -fsSL --retry 3 --retry-delay 2 -o "$TMP_DIR/$ARCHIVE" "$DOWNLOAD_URL"
 
 echo "📦 Extracting $ARCHIVE..."
 if ! tar -xzf "$TMP_DIR/$ARCHIVE" -C "$TMP_DIR"; then
-  echo "❌ Extraction failed for $ARCHIVE"
-  rm -rf "$TMP_DIR"
-  exit 1
+	echo "❌ Extraction failed for $ARCHIVE"
+	rm -rf "$TMP_DIR"
+	exit 1
 fi
 
 echo "🚀 Installing to $LOCAL_BIN_DIR..."
 if ! install -m 755 "$TMP_DIR/$PKG" "$LOCAL_BIN_DIR/$PKG"; then
-  echo "❌ Installation failed."
-  rm -rf "$TMP_DIR"
-  exit 1
+	echo "❌ Installation failed."
+	rm -rf "$TMP_DIR"
+	exit 1
 fi
 
 echo -e "\n🔹 To setup alias run:"
