@@ -28,6 +28,7 @@ LOCAL_BIN_DIR="/usr/local/bin"
 
 ALIASES=(
 	"alias lf='yazi'"
+ 	"alias slf='sudo -E yazi'"
 )
 
 if ! command -v git &>/dev/null; then
