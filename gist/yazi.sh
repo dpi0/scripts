@@ -61,12 +61,13 @@ echo "🚀 Installing to $LOCAL_BIN_DIR..."
 # when inside double quotes "", {ya, yazi} won't expand.
 echo "🟨 Need superuser password to copy $TMP_DIR/yazi-x86_64-unknown-linux-musl/ya and $TMP_DIR/yazi-x86_64-unknown-linux-musl/yazi to $LOCAL_BIN_DIR"
 echo "🔹This will run : sudo cp '$TMP_DIR/yazi-x86_64-unknown-linux-musl/ya' '$TMP_DIR/yazi-x86_64-unknown-linux-musl/yazi' '$LOCAL_BIN_DIR'"
+echo "❔ Why sudo? Often you'll need to manage root:root owned files. And using yazi I find it easier to navigate these regions of the filesystem."
 sudo cp "$TMP_DIR/yazi-x86_64-unknown-linux-musl/ya" "$TMP_DIR/yazi-x86_64-unknown-linux-musl/yazi" "$LOCAL_BIN_DIR"
 
 backup_pkg_config() {
 	if [ -d "$CONFIG_DIR/$PKG" ]; then
-		mv "$CONFIG_DIR/$PKG" "$CONFIG_DIR/$PKG.$TIMESTAMP.old"
-		echo "⏳️ Existing config backed up to $CONFIG_DIR/$PKG.$TIMESTAMP.old"
+		mv "$CONFIG_DIR/$PKG" "$CONFIG_DIR/$PKG.$TIMESTAMP"
+		echo "⏳️ Existing config backed up to $CONFIG_DIR/$PKG.$TIMESTAMP"
 	fi
 }
 
@@ -88,3 +89,7 @@ printf "\"%s\" " "${ALIASES[@]}"
 echo ">> \"\$HOME/.\$(basename \$SHELL)rc\""
 echo "🔹 Then apply changes with:"
 echo "    source \"\$HOME/.\$(basename \$SHELL)rc\""
+
+echo -e "\n As yazi in under heavy development, it would be a nice idea for the plugins to be on the latest version"
+echo "🔹 For upgrading all plugins run:"
+echo "    ya pkg upgrade"
