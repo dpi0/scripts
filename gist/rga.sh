@@ -32,7 +32,6 @@ curl -fsSL --retry 3 --retry-delay 2 -o "$TMP_DIR/$ARCHIVE" "$DOWNLOAD_URL"
 echo "📦 Extracting $ARCHIVE..."
 if ! tar -xzf "$TMP_DIR/$ARCHIVE" -C "$TMP_DIR"; then
 	echo "❌ Extraction failed for $ARCHIVE"
-	rm -rf "$TMP_DIR"
 	exit 1
 fi
 
@@ -41,7 +40,6 @@ echo "🚀 Installing to $LOCAL_BIN_DIR..."
 for bin in rga rga-fzf rga-fzf-open; do
 	if ! install -m 755 "$TMP_DIR/${ARCHIVE%.tar.gz}/$bin" "$LOCAL_BIN_DIR/$bin"; then
 		echo "❌ Installation of $bin failed."
-		rm -rf "$TMP_DIR"
 		exit 1
 	fi
 done

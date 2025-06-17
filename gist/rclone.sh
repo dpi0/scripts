@@ -34,14 +34,12 @@ if ! command -v unzip >/dev/null 2>&1; then
 fi
 if ! unzip -q "$TMP_DIR/$ARCHIVE" -d "$TMP_DIR"; then
 	echo "❌ Extraction failed for $ARCHIVE"
-	rm -rf "$TMP_DIR"
 	exit 1
 fi
 
 echo "🚀 Installing to $LOCAL_BIN_DIR..."
 if ! install -m 755 "$TMP_DIR/${ARCHIVE%.zip}/$PKG" "$LOCAL_BIN_DIR/$PKG"; then
 	echo "❌ Installation failed."
-	rm -rf "$TMP_DIR"
 	exit 1
 fi
 

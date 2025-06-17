@@ -28,7 +28,7 @@ LOCAL_BIN_DIR="/usr/local/bin"
 
 ALIASES=(
 	"alias lf='yazi'"
- 	"alias slf='sudo -E yazi'"
+	"alias slf='sudo -E yazi'"
 )
 
 if ! command -v git &>/dev/null; then
@@ -45,7 +45,6 @@ trap 'rm -rf "$TMP_DIR"' EXIT
 echo "📥 Downloading $PKG $VERSION via $DOWNLOAD_URL..."
 if ! curl -fsLo "$TMP_DIR/$ARCHIVE" "$DOWNLOAD_URL"; then
 	echo "🟥 Error: Failed to download $PKG from $DOWNLOAD_URL" >&2
-	rm -rf "$TMP_DIR"
 	exit 1
 fi
 
@@ -53,13 +52,12 @@ echo "📦 Extracting $ARCHIVE to $TMP_DIR..."
 if ! unzip -q "$TMP_DIR/$ARCHIVE" -d "$TMP_DIR"; then
 	echo "🟥 Error: Failed to extract $ARCHIVE" >&2
 	echo "ℹ️ Perhaps you don't have 'unzip' installed which is needed to extract this $ARCHIVE archive."
-	rm -rf "$TMP_DIR"
 	exit 1
 fi
 
 echo "🚀 Installing to $LOCAL_BIN_DIR..."
 # when inside double quotes "", {ya, yazi} won't expand.
-echo "🟨 Need superuser password to copy $TMP_DIR/yazi-x86_64-unknown-linux-musl/ya and $TMP_DIR/yazi-x86_64-unknown-linux-musl/yazi to $LOCAL_BIN_DIR"
+echo "🟨 Need superuser password to copy ya and yazi binaries to $LOCAL_BIN_DIR"
 echo "🔹This will run : sudo cp '$TMP_DIR/yazi-x86_64-unknown-linux-musl/ya' '$TMP_DIR/yazi-x86_64-unknown-linux-musl/yazi' '$LOCAL_BIN_DIR'"
 echo "❔ Why sudo? Often you'll need to manage root:root owned files. And using yazi I find it easier to navigate these regions of the filesystem."
 sudo cp "$TMP_DIR/yazi-x86_64-unknown-linux-musl/ya" "$TMP_DIR/yazi-x86_64-unknown-linux-musl/yazi" "$LOCAL_BIN_DIR"

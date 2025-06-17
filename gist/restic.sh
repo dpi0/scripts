@@ -35,14 +35,12 @@ fi
 
 if ! bunzip2 "$TMP_DIR/$ARCHIVE"; then
 	echo "❌ Extraction failed for $ARCHIVE"
-	rm -rf "$TMP_DIR"
 	exit 1
 fi
 
 echo "🚀 Installing to $LOCAL_BIN_DIR..."
 if ! install -m 755 "$TMP_DIR/${ARCHIVE%.bz2}" "$LOCAL_BIN_DIR/$PKG"; then
 	echo "❌ Installation failed."
-	rm -rf "$TMP_DIR"
 	exit 1
 fi
 

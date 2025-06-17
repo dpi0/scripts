@@ -32,7 +32,6 @@ curl -fsSL --retry 3 --retry-delay 2 -o "$TMP_DIR/$ARCHIVE" "$DOWNLOAD_URL"
 echo "📦 Extracting $ARCHIVE..."
 if ! tar -xzf "$TMP_DIR/$ARCHIVE" -C "$TMP_DIR"; then
 	echo "❌ Extraction failed for $ARCHIVE"
-	rm -rf "$TMP_DIR"
 	exit 1
 fi
 
@@ -40,7 +39,6 @@ echo "🚀 Installing to $LOCAL_BIN_DIR..."
 echo "🟨 $PKG might need to encrypt root owned files/directories. Need superuser password to install $PKG and ${PKG}-keygen in $INSTALL_PATH."
 sudo cp "$TMP_DIR/age/$PKG" "$TMP_DIR/age/${PKG}-keygen" "$INSTALL_PATH" || {
 	echo "🟥 Error: Failed to install $PKG to $INSTALL_PATH." >&2
-	rm -rf "$TMP_DIR"
 	exit 1
 }
 
