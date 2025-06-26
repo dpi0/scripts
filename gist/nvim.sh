@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+# set -euo pipefail
 
 echo "███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗"
 echo "████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║"
@@ -48,7 +48,7 @@ backup_pkg_config() {
 
 deploy_pkg_config() {
 	echo "📥 Cloning $MY_REPO to $CONFIG_DIR"
-	git clone --depth 1 "${MY_REPO}.git" "$CONFIG_DIR" &>/dev/null
+	git clone --depth 1 "${MY_REPO}.git" "$CONFIG_DIR/nvim" &>/dev/null
 
 	# echo "🔗 Symlinking $CONFIG_DIR/$PKG to $CONFIG_DIR/$PKG"
 	# ln -s "$CONFIG_DIR/$PKG" "$CONFIG_DIR/$PKG"
