@@ -79,8 +79,44 @@ echo -e "\n🔹 To setup alias run:"
 echo -n "    printf \"%s\n\" "
 printf "\"%s\" " "${ALIASES[@]}"
 echo ">> \"\$HOME/.\$(basename \$SHELL)rc\""
-echo "🔹 Then apply changes with:"
-echo "    source \"\$HOME/.\$(basename \$SHELL)rc\""
+
+echo -e "\n🔹 To configure fzf-lua neovim, run:"
+echo -n "    cat << 'EOF' >> \"\$HOME/.\$(basename \$SHELL)rc\""
+echo
+
+cat <<'EOF'
+export FZF_DEFAULT_OPTS="
+  --layout=reverse
+  --preview='bat --style=numbers --color=always --line-range :500 {}'
+  --preview-window='right:50%'
+  --ansi
+  --extended
+  --bind ctrl-u:preview-half-page-up,ctrl-d:preview-half-page-down,shift-up:preview-top,shift-down:preview-bottom
+  --color=hl:#FF94BF,hl+:#FF94BF"
+export FZF_DEFAULT_COMMAND="fd --hidden --color=always \
+  --exclude node-modules \
+  --exclude go/pkg/mod \
+  --exclude .local/share \
+  --exclude .local/state \
+  --exclude .vscode \
+  --exclude .config/Code \
+  --exclude .Trash-1000 \
+  --exclude .git \
+  --exclude .cargo \
+  --exclude .rustup \
+  --exclude .cache \
+  --exclude .cargo \
+  --exclude .mozilla \
+  --exclude .npm \
+  --exclude .cache"
+EOF
+echo "EOF"
+
+echo -e "\n🔹 Then apply changes with:"
+echo '    source "$HOME/.$(basename $SHELL)rc"'
+
+echo -e "\n⚠️ Make sure to install the following packages for fzf-lua neovim to work properly:"
+echo "    sharkdp/fd and BurntSushi/ripgrep"
 
 echo -e "\n ℹ️ To uninstall all neovim config and start from scratch run:"
 echo "    rm -rf $HOME/.config/nvim $HOME/.local/share/nvim $HOME/.local/state/nvim"
