@@ -31,8 +31,8 @@ trap 'rm -rf "$TMP_DIR"' EXIT
 echo "📥 Downloading $PKG $VERSION via $DOWNLOAD_URL..."
 curl -fsLo "$TMP_DIR/$APPIMAGE" "$DOWNLOAD_URL"
 
-echo "🚀 Installing to $INSTALL_PATH..."
-cp "$TMP_DIR/$APPIMAGE" "$INSTALL_PATH"
+echo "🚀 Installing to $LOCAL_BIN_DIR..."
+cp "$TMP_DIR/$APPIMAGE" "$LOCAL_BIN_DIR"
 
 setup_desktop_entry() {
 	echo "⚙️ Setting up desktop entry for ${PKG} in ${LOCAL_SHARE_APPLICATIONS_DIR}..."
