@@ -14,6 +14,7 @@ PKG="age"
 REPO="FiloSottile/age"
 
 echo "🔍 Fetching latest version..."
+echo "🔹 Running: curl -fsSL \"https://api.github.com/repos/$REPO/releases/latest\""
 json=$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest")
 VERSION=$(echo "$json" | grep -m1 '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 
@@ -26,19 +27,26 @@ mkdir -p "$LOCAL_BIN_DIR"
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
 
+echo
 echo "📥 Downloading $PKG $VERSION via $DOWNLOAD_URL..."
+echo "🔹 Running: curl -fsSL --retry 3 --retry-delay 2 -o \"$TMP_DIR/$ARCHIVE\" \"$DOWNLOAD_URL\""
 curl -fsSL --retry 3 --retry-delay 2 -o "$TMP_DIR/$ARCHIVE" "$DOWNLOAD_URL"
 
+echo
 echo "📦 Extracting $ARCHIVE..."
+echo "🔹 Running: tar -xzf \"$TMP_DIR/$ARCHIVE\" -C \"$TMP_DIR\""
 if ! tar -xzf "$TMP_DIR/$ARCHIVE" -C "$TMP_DIR"; then
 	echo "❌ Extraction failed for $ARCHIVE"
 	exit 1
 fi
 
+echo
 echo "🚀 Installing to $LOCAL_BIN_DIR..."
-echo "🟨 $PKG might need to encrypt root owned files/directories. Need superuser password to install $PKG and ${PKG}-keygen in $INSTALL_PATH."
-sudo cp "$TMP_DIR/age/$PKG" "$TMP_DIR/age/${PKG}-keygen" "$INSTALL_PATH" || {
-	echo "🟥 Error: Failed to install $PKG to $INSTALL_PATH." >&2
+echo "🔹 Running: install -m 755 \"$TMP_DIR/age/$PKG\" \"$LOCAL_BIN_DIR/$PKG\" && install -m 755 \"$TMP_DIR/age/${PKG}-keygen\" \"$LOCAL_BIN_DIR/${PKG}-keygen\""
+
+install -m 755 "$TMP_DIR/age/$PKG" "$LOCAL_BIN_DIR/$PKG"
+install -m 755 "$TMP_DIR/age/${PKG}-keygen" "$LOCAL_BIN_DIR/${PKG}-keygen" || {
+	echo "🟥 Error: Failed to install $PKG to $LOCAL_BIN_DIR." >&2
 	exit 1
 }
 
