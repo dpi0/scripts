@@ -7,7 +7,13 @@ USER_ENTRY=$(getent passwd 1000) || {
 }
 HOME_DIR=$(cut -d: -f6 <<<"$USER_ENTRY")
 
-REPO_DIR="$REPO_DIR"
+ENV_FILE="$HOME_DIR/.scripts.env"
+[[ -f $ENV_FILE ]] && set -a && source "$ENV_FILE" && set +a || {
+	echo "❌ Env File: '$ENV_FILE' not found. Exiting." >&2
+	exit 1
+}
+
+REPO_DIR="$CLONE_PATH"
 HASH_FILE="/tmp/last_known_git_hash"
 LOG_DIR="$HOME_DIR/.local/state/check-repo-hook"
 LOG_FILE="$LOG_DIR/run.log"

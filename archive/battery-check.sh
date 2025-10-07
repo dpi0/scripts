@@ -39,10 +39,15 @@ battery_info=$(acpi -b)
 charging_status=$(grep -oE 'Charging|Discharging' <<< "$battery_info")
 battery_percent=$(grep -oE '[0-9]+%' <<< "$battery_info" | tr -d '%')
 
+# make it title case with sed
+HOSTNAME=$(hostnamectl hostname)
+HOSTNAME=$(printf '%s' "$HOSTNAME" | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2))}')
+# HOSTNAME='Titan'
+#
 log "Battery Percentage: $battery_percent%"
 
 if [[ "$charging_status" == "Charging" && $battery_percent -gt $BATTERY_HIGH ]]; then
-  notify "Battery High, Disconnect" "Battery level is at ${battery_percent}%." "$COLOR_GREEN"
+  notify "Battery High, Disconnect" "🟢 $HOSTNAME Battery level is at ${battery_percent}%." "$COLOR_GREEN"
 elif [[ "$charging_status" == "Discharging" && $battery_percent -lt $BATTERY_LOW ]]; then
-  notify "Low Battery, Plug in" "Battery level is at ${battery_percent}%." "$COLOR_RED"
+  notify "Low Battery, Plug in" "🔴 $HOSTNAME Battery level is at ${battery_percent}%." "$COLOR_RED"
 fi
