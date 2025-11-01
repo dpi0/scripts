@@ -1,6 +1,5 @@
-#NoEnv
-#SingleInstance force
-#MaxHotkeysPerInterval 9999
+﻿#Requires AutoHotkey v2.0
+#SingleInstance Force
 
-#include %A_ScriptDir%\functions.ahk
-#include %A_ScriptDir%\binds.ahk
+#Include binds.ahk
+#Include battery_alarm.ahk
