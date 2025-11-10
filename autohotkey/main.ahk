@@ -1,5 +1,5 @@
-﻿#Requires AutoHotkey v2.0
+#Requires AutoHotkey v2.0
 #SingleInstance Force
 
-#Include binds.ahk
-#Include battery_alarm.ahk
+#Include %A_ScriptDir%\binds.ahk
+#Include %A_ScriptDir%\battery_alarm.ahk
