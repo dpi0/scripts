@@ -1,17 +1,13 @@
 #!/usr/bin/env bash
 
-STATE_FILE="$HOME/.local/state/airplane_mode_state"
-
-if [ ! -f "$STATE_FILE" ]; then
-	echo "off" >"$STATE_FILE"
-fi
-
-STATE=$(cat "$STATE_FILE")
-
-if [ "$STATE" = "off" ]; then
-	echo "on" >"$STATE_FILE"
-	notify-send "🟢 Airplane Mode Enabled"
+# Check if any wireless device is currently *not* soft-blocked
+# If a match is found, it means at least one radio is ON.
+# So, we turn everything OFF.
+# And ENABLE Airplane Mode.
+if rfkill list | grep -q "Soft blocked: no"; then
+  notify-send "✈️ Airplane Mode: On" "All wireless connections are now disabled."
+  rfkill block all
 else
-	echo "off" >"$STATE_FILE"
-	notify-send "🔴 Airplane Mode Disabled"
+  notify-send "🛜 Airplane Mode: Off" "Wireless connections are now enabled."
+  rfkill unblock all
 fi
