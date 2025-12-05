@@ -52,7 +52,7 @@ partitioning() {
 
 install_base() {
   pacstrap /mnt base linux-lts vim sudo less intel-ucode qemu-guest-agent
-  genfstab -U /mnt >> /mnt/etc/fstab
+  genfstab -U /mnt >>/mnt/etc/fstab
 }
 
 configure_system() {
@@ -60,16 +60,16 @@ configure_system() {
   ln -sf /usr/share/zoneinfo/"$TIMEZONE" /etc/localtime
   hwclock -w
   # LOCALE
-  echo "$LOCALE_LANG_COMPLETE" >> /etc/locale.gen
+  echo "$LOCALE_LANG_COMPLETE" >>/etc/locale.gen
   locale-gen
-  echo "LANG=$LOCALE_LANG" >> /etc/locale.conf
-  echo "KEYMAP=$KEYMAP" >> /etc/vconsole.conf
-  echo "FONT=$FONT" >> /etc/vconsole.conf
-  echo "$HOSTNAME" >> /etc/hostname
+  echo "LANG=$LOCALE_LANG" >>/etc/locale.conf
+  echo "KEYMAP=$KEYMAP" >>/etc/vconsole.conf
+  echo "FONT=$FONT" >>/etc/vconsole.conf
+  echo "$HOSTNAME" >>/etc/hostname
   # USER
   useradd -mg "$USERGROUP" "$USERNAME"
   echo "$USERNAME:$USER_PASSWORD" | chpasswd
-  echo "%$USERGROUP ALL=(ALL:ALL) ALL" >> /etc/sudoers
+  echo "%$USERGROUP ALL=(ALL:ALL) ALL" >>/etc/sudoers
   # PACMAN
   sed -i 's/^#Color/Color/; s/^#ParallelDownloads/ParallelDownloads/; /Color/a ILoveCandy' /etc/pacman.conf
   pacman -S --noconfirm git openssh pacman-contrib networkmanager
@@ -84,7 +84,7 @@ setup_bootloader() {
     echo timeout 0
     echo console-mode max
     echo editor no
-  } >> /boot/loader/loader.conf
+  } >>/boot/loader/loader.conf
 
   UUID=$(blkid -s UUID -o value "$DISK"2)
   {
@@ -92,7 +92,7 @@ setup_bootloader() {
     echo linux /vmlinuz-linux-lts
     echo initrd /initramfs-linux-lts.img
     echo options root=UUID="$UUID" quiet rw
-  } >> /boot/loader/entries/arch.conf
+  } >>/boot/loader/entries/arch.conf
 }
 
 main() {

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-THEME="$HOME/.dotfiles/rofi/themes/minimal-fullscreen-jetbrains-font.rasi"
+THEME="$HOME/.dotfiles/rofi/themes/minimal-fullscreen.rasi"
 
 open_in_browser() {
   local url="$1"
@@ -30,7 +30,7 @@ declare -A actions=(
 )
 
 menu=$(printf "%s\n" "${!actions[@]}")
-chosen=$(echo -e "$menu" | rofi -no-config -dmenu -i -theme "$THEME")
+chosen=$(echo -e "$menu" | rofi -no-config -dmenu -i -theme "$THEME" -theme-str '* { font: "JetBrainsMono NF 20"; }')
 
 if [[ -n "$chosen" && -n "${actions[$chosen]}" ]]; then
   open_in_browser "${actions[$chosen]}"

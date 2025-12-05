@@ -27,10 +27,10 @@ echo "                                             "
 set_locale_and_timezone() {
   chroot /mnt ln -sf /usr/share/zoneinfo/"$TIMEZONE" /etc/localtime
   chroot /mnt hwclock -w
-  chroot /mnt echo "$LOCALE_LANG UTF-8" > /etc/locale.gen
+  chroot /mnt echo "$LOCALE_LANG UTF-8" >/etc/locale.gen
   chroot /mnt locale-gen
-  chroot /mnt echo "LANG=$LOCALE_LANG" > /etc/default/locale
-  chroot /mnt echo "KEYMAP=$KEYMAP" > /etc/vconsole.conf
+  chroot /mnt echo "LANG=$LOCALE_LANG" >/etc/default/locale
+  chroot /mnt echo "KEYMAP=$KEYMAP" >/etc/vconsole.conf
   chroot /mnt localectl set-locale LANG=en_US.UTF-8
 }
 
@@ -53,7 +53,7 @@ install_base() {
   mount --make-rslave --rbind /sys /mnt/sys
   mount --make-rslave --rbind /dev /mnt/dev
   mount --make-rslave --rbind /run /mnt/run
-  genfstab -U /mnt >> /mnt/etc/fstab
+  genfstab -U /mnt >>/mnt/etc/fstab
   sed -i '/# \/dev\/sr0/,$d' /mnt/etc/fstab
 }
 
@@ -61,13 +61,13 @@ configure_system() {
   chroot /mnt apt update && chroot /mnt apt install -y vim locales linux-image-amd64 sudo network-manager dosfstools ssh lsb-release grub-efi
 
   CODENAME=$(chroot /mnt lsb_release --codename --short)
-  cat > /mnt/etc/apt/sources.list << HEREDOC
+  cat >/mnt/etc/apt/sources.list <<HEREDOC
 deb https://deb.debian.org/debian/ $CODENAME main contrib non-free non-free-firmware
 deb https://security.debian.org/debian-security $CODENAME-security main contrib non-free non-free-firmware
 deb https://deb.debian.org/debian/ $CODENAME-updates main contrib non-free non-free-firmware
 HEREDOC
 
-  echo "$HOSTNAME" > /mnt/etc/hostname
+  echo "$HOSTNAME" >/mnt/etc/hostname
   chroot /mnt useradd -mG "$USERGROUP" "$USERNAME" -s /bin/bash
   echo "$USERNAME:$USER_PASSWORD" | chroot /mnt chpasswd
 
