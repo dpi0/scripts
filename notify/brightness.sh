@@ -1,19 +1,34 @@
 #!/usr/bin/env bash
 
-brightnessctl "$@" > /dev/null
-
 msgID=31232
-color="#FFBF00FF"
-brightnow="$(brightnessctl g)"
-brightmax="$(brightnessctl m)"
-brightness=$(awk "BEGIN {printf \"%d\", ${brightnow}/${brightmax}*100}")
+accent="#EBBB2D"
+
+for arg in "$@"; do
+  case "$arg" in
+  --up=*)
+    step="${arg#*=}"
+    brightnessctl set "${step}%+"
+    ;;
+  --down=*)
+    step="${arg#*=}"
+    brightnessctl set "${step}%-"
+    ;;
+  *)
+    brightnessctl "$arg"
+    ;;
+  esac
+done
+
+# NOTE: This block has to be below the above args
+current="$(brightnessctl g)"
+max="$(brightnessctl m)"
+percent=$((current * 100 / max))
 
 dunstify -a "changeBrightness" \
-  "󰃞 Brightness: ${brightness}%" \
+  "Brightness: ${percent}%" \
   -u low \
   -t 700 \
   -r "$msgID" \
-  -h int:value:"$brightness" \
-  -h string:fgcolor:"$color" \
-  -h string:frcolor:"$color" \
-  -h string:hlcolor:"$color"
+  -h int:value:"$percent" \
+  -h string:fgcolor:"$accent" \
+  -h string:hlcolor:"$accent"
