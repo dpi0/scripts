@@ -1,1 +1,3 @@
-# `/home/dpi0/scripts`
+# Scripts
+
+Perform complicated actions with simple abstracted interfaces.
