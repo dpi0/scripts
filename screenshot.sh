@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
 
-GRIMBLAST_BIN="$HOME/bin/contrib/grimblast/grimblast"
 DIR="$HOME/Screenshots"
 
-make_filename()
+# Check if grimblast is available in PATH
+if ! command -v grimblast >/dev/null 2>&1; then
+  dunstify -u critical "Grimblast not found." "Path: $GRIMBLAST_BIN"
+  exit 1
+else
+  printf '%s\n' "GRIMBLAST_BIN not present: $GRIMBLAST_BIN" >&2
+fi
+
+make_filename() {
   local prefix="$1"
   local timestamp datestamp window_name
   timestamp="$(date +'%H-%M-%S')"
@@ -44,21 +51,21 @@ screenshot_area() {
   local file
   file="$(make_filename "A")"
   export SLURP_ARGS="-d"
-  "$GRIMBLAST_BIN" --freeze copysave area "$file"
+  grimblast --freeze copysave area "$file"
   notify_image_saved "$file"
 }
 
 screenshot_fullscreen() {
   local file
   file="$(make_filename "F")"
-  "$GRIMBLAST_BIN" --freeze copysave screen "$file"
+  grimblast --freeze copysave screen "$file"
   notify_image_saved "$file"
 }
 
 screenshot_annotated() {
   local file
   file="$(make_filename "N")"
-  "$GRIMBLAST_BIN" --freeze save screen - |
+  grimblast --freeze save screen - |
     satty --filename - --fullscreen --output-filename "$file"
   notify_image_saved "$file"
 }
@@ -66,7 +73,7 @@ screenshot_annotated() {
 screenshot_window() {
   local file
   file="$(make_filename "W")"
-  "$GRIMBLAST_BIN" --freeze copysave active "$file"
+  grimblast --freeze copysave active "$file"
   notify_image_saved "$file"
 }
 
@@ -77,19 +84,9 @@ usage() {
 
 mode="$1"
 case "$mode" in
-area)
-  screenshot_area
-  ;;
-fullscreen)
-  screenshot_fullscreen
-  ;;
-annotated)
-  screenshot_annotated
-  ;;
-window)
-  screenshot_window
-  ;;
-*)
-  usage
-  ;;
+area) screenshot_area ;;
+fullscreen) screenshot_fullscreen ;;
+annotated) screenshot_annotated ;;
+window) screenshot_window ;;
+*) usage ;;
 esac
