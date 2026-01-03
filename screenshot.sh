@@ -4,10 +4,8 @@ DIR="$HOME/Screenshots"
 
 # Check if grimblast is available in PATH
 if ! command -v grimblast >/dev/null 2>&1; then
-  dunstify -u critical "Grimblast not found." "Path: $GRIMBLAST_BIN"
+  dunstify -u critical "Grimblast not found." "Install grimblast or add it to PATH."
   exit 1
-else
-  printf '%s\n' "GRIMBLAST_BIN not present: $GRIMBLAST_BIN" >&2
 fi
 
 make_filename() {
