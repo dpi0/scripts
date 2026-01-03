@@ -10,7 +10,9 @@ reboot_to_windows="󰨡 Reboot to Windows"
 
 options="$shutdown\n$reboot\n$logout\n$suspend\n$hibernate\n$lock\n$reboot_to_windows"
 
-chosen=$(echo -e "$options" | rofi -no-config -dmenu -i -theme ~/.dotfiles/rofi/themes/minimal-fullscreen.rasi -theme-str '* { font: "JetBrainsMono NF 20"; }')
+THEME="$HOME/.dotfiles/rofi/themes/minimal-fullscreen.rasi"
+
+chosen=$(echo -e "$options" | rofi -no-config -dmenu -i -theme "$THEME" -theme-str '* { font: "JetBrainsMono NF 20"; }')
 
 case "$chosen" in
 "$shutdown")
