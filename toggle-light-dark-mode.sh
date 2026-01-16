@@ -6,8 +6,10 @@ current_mode=$(gsettings get org.gnome.desktop.interface color-scheme 2>/dev/nul
 # Determine new mode and wallpaper
 if [[ $current_mode == "'prefer-dark'" ]]; then
 	gsettings set org.gnome.desktop.interface color-scheme 'prefer-light'
-	wallpaper="$LIGHT_WALLPAPER"
+	dunstify -u normal -i preferences-desktop-theme \
+		"󰖨   Currently in Light Mode"
 else
 	gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
-	wallpaper="$DARK_WALLPAPER"
+	dunstify -u normal -i preferences-desktop-theme \
+		"󰖔   Currently in Dark Mode"
 fi
