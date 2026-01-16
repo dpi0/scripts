@@ -8,21 +8,6 @@ launch() {
 
   hyprctl dispatch workspace "$workspace"
   firefox --new-window "$url"
-  # below is to not have firefox open in fullscreen, blocking waybar
-  sleep 0.2
-  hyprctl dispatch fullscreen 1
-  hyprctl dispatch fullscreen 1 # have to run twice
-}
-
-launch2() {
-  local workspace="$1"
-  local url="$2"
-
-  hyprctl dispatch workspace "$workspace"
-  ~/temp/webapp.sh "$url"
-  hyprctl dispatch fullscreen 1
-  hyprctl dispatch fullscreen 1 # have to run twice
-
 }
 
 declare -A actions=(
