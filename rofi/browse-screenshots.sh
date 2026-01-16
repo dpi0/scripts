@@ -5,10 +5,12 @@ THEME="$HOME/.dotfiles/rofi/themes/image-grid-fullscreen.rasi"
 OVERRIDE_COLS='listview { lines: 4; columns: 4; }'
 
 chosen=$(
-  find "$SCREENSHOT_DIR" -type f \
-    \( -iname '*.png' -o -iname '*.jpg' \) \
-    -print0 | sort -z |
-    while IFS= read -r -d '' img; do
+  fd -t f -e png -e jpg . "$SCREENSHOT_DIR" \
+    --print0 |
+    xargs -0 stat --format '%Y %n' |
+    sort -rn |
+    cut -d' ' -f2- |
+    while IFS= read -r img; do
       filename=$(basename "$img")
       printf '%s\0icon\x1f%s\n' "$filename" "$img"
     done |
@@ -22,6 +24,9 @@ chosen=$(
 fullpath=$(find "$SCREENSHOT_DIR" -type f -name "$chosen" | head -n1)
 
 if [ -n "$fullpath" ]; then
+  mime=$(file --mime-type -b "$fullpath")
+  wl-copy --type "$mime" <"$fullpath"
+  notify-send "Screenshot copied" "$chosen"
   loupe "$fullpath"
 else
   rofi -e "Error: Screenshot not found."
