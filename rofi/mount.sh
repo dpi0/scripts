@@ -29,7 +29,7 @@ mountpoint_from_dev() {
   if [ -n "$label" ]; then
     printf '/mnt/%s\n' "$label"
   else
-    printf '/mnt/%s\n' "$(basename "$dev")"
+    printf '/mnt/dev/%s\n' "$(basename "$dev")"
   fi
 }
 
