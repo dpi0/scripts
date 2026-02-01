@@ -18,7 +18,7 @@ fi
 
 # 2. if not running, start recording
 mkdir -p "$HOME/Videos"
-FILENAME="$HOME/Videos/R $(date +%H-%M-%S %d-%b-%y).mp4"
+FILENAME="$HOME/Videos/R $(date +"%H-%M-%S_%d-%b-%y").mp4"
 
 echo "recording" >"$STATE_FILE"
 
