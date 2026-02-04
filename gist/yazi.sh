@@ -1,93 +1,27 @@
 #!/usr/bin/env bash
+set -eo pipefail
 
-set -euo pipefail
+echo ">> Installing sxyazi/yazi"
 
-echo "██╗   ██╗ █████╗ ███████╗██╗"
-echo "╚██╗ ██╔╝██╔══██╗╚══███╔╝██║"
-echo " ╚████╔╝ ███████║  ███╔╝ ██║"
-echo "  ╚██╔╝  ██╔══██║ ███╔╝  ██║"
-echo "   ██║   ██║  ██║███████╗██║"
-echo "   ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝"
-echo "                            "
+mkdir -p "$HOME/.local/bin"
 
-PKG="yazi"
-REPO="sxyazi/yazi"
+VERSION=$(curl -fsSL https://api.github.com/repos/sxyazi/yazi/releases/latest | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -n1)
+[ -n "$VERSION" ] || { echo "Failed to get version"; exit 1; }
 
-echo "🔍 Fetching latest version..."
-json=$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest")
-VERSION=$(echo "$json" | grep -m1 '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+echo "Downloading and extracting..."
+curl -fsSL "https://github.com/sxyazi/yazi/releases/download/$VERSION/yazi-x86_64-unknown-linux-musl.zip" -o yazi.zip
+unzip -q yazi.zip
 
-ARCHIVE="${PKG}-x86_64-unknown-linux-musl.zip"
-DOWNLOAD_URL="https://github.com/$REPO/releases/download/$VERSION/$ARCHIVE"
+echo "Installing..."
+install -m755 "yazi-x86_64-unknown-linux-musl/yazi" "$HOME/.local/bin/yazi"
+install -m755 "yazi-x86_64-unknown-linux-musl/ya" "$HOME/.local/bin/ya"
 
-MY_REPO="https://github.com/dpi0/sh"
-CONFIG_DIR="$HOME/.config"
-SHELL_DIR="$HOME/sh"
-TIMESTAMP=$(date +"%d-%B-%Y_%H-%M-%S")
-LOCAL_BIN_DIR="/usr/local/bin"
+echo "Cleaning up..."
+rm -rf yazi.zip yazi-x86_64-unknown-linux-musl
 
-ALIASES=(
-	"alias lf='yazi'"
-	"alias slf='sudo -E yazi'"
-)
-
-if ! command -v git &>/dev/null; then
-	echo "🟥 'git' is not installed. Please install it manually. Exiting..."
-	exit 1
-fi
-echo "✅ git is present."
-
-mkdir -p "$CONFIG_DIR"
-
-TMP_DIR=$(mktemp -d)
-trap 'rm -rf "$TMP_DIR"' EXIT
-
-echo "📥 Downloading $PKG $VERSION via $DOWNLOAD_URL..."
-if ! curl -fsLo "$TMP_DIR/$ARCHIVE" "$DOWNLOAD_URL"; then
-	echo "🟥 Error: Failed to download $PKG from $DOWNLOAD_URL" >&2
-	exit 1
-fi
-
-echo "📦 Extracting $ARCHIVE to $TMP_DIR..."
-if ! unzip -q "$TMP_DIR/$ARCHIVE" -d "$TMP_DIR"; then
-	echo "🟥 Error: Failed to extract $ARCHIVE" >&2
-	echo "ℹ️ Perhaps you don't have 'unzip' installed which is needed to extract this $ARCHIVE archive."
-	exit 1
-fi
-
-echo "🚀 Installing to $LOCAL_BIN_DIR..."
-# when inside double quotes "", {ya, yazi} won't expand.
-echo "🟨 Need superuser password to copy ya and yazi binaries to $LOCAL_BIN_DIR"
-echo "🔹This will run : sudo cp '$TMP_DIR/yazi-x86_64-unknown-linux-musl/ya' '$TMP_DIR/yazi-x86_64-unknown-linux-musl/yazi' '$LOCAL_BIN_DIR'"
-echo "❔ Why sudo? Often you'll need to manage root:root owned files. And using yazi I find it easier to navigate these regions of the filesystem."
-sudo cp "$TMP_DIR/yazi-x86_64-unknown-linux-musl/ya" "$TMP_DIR/yazi-x86_64-unknown-linux-musl/yazi" "$LOCAL_BIN_DIR"
-
-backup_pkg_config() {
-	if [ -d "$CONFIG_DIR/$PKG" ]; then
-		mv "$CONFIG_DIR/$PKG" "$CONFIG_DIR/$PKG.$TIMESTAMP"
-		echo "⏳️ Existing config backed up to $CONFIG_DIR/$PKG.$TIMESTAMP"
-	fi
-}
-
-deploy_pkg_config() {
-	echo "📥 Cloning $MY_REPO to $SHELL_DIR"
-	[ -d "$SHELL_DIR" ] && rm -rf "$SHELL_DIR"
-	git clone --depth 1 "${MY_REPO}.git" "$SHELL_DIR" &>/dev/null
-
-	echo "🔗 Symlinking $SHELL_DIR/$PKG to $CONFIG_DIR/$PKG"
-	ln -s "$SHELL_DIR/$PKG" "$CONFIG_DIR/$PKG"
-}
-
-backup_pkg_config
-deploy_pkg_config
-
-echo -e "\n🔹 To setup alias run:"
-echo -n "    printf \"%s\n\" "
-printf "\"%s\" " "${ALIASES[@]}"
-echo ">> \"\$HOME/.\$(basename \$SHELL)rc\""
-echo "🔹 Then apply changes with:"
-echo "    source \"\$HOME/.\$(basename \$SHELL)rc\""
-
-echo -e "\n As yazi in under heavy development, it would be a nice idea for the plugins to be on the latest version"
-echo "🔹 For upgrading all plugins run:"
-echo "    ya pkg upgrade"
+echo
+echo "Done! Make sure $HOME/.local/bin is in your PATH."
+echo
+echo "Run: yazi --version"
+echo
+echo "Run: ya --version"
