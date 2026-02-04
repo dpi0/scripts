@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-THEME="$HOME/.dotfiles/rofi/themes/minimal-fullscreen.rasi"
-
 launch() {
   local workspace="$1"
   local url="$2"
@@ -22,7 +20,7 @@ declare -A actions=(
 )
 
 menu=$(printf "%s\n" "${!actions[@]}")
-chosen=$(echo -e "$menu" | rofi -no-config -dmenu -i -theme "$THEME" -theme-str '* { font: "JetBrainsMono NF 20"; }')
+chosen=$(echo -e "$menu" | rofi -no-config -dmenu -i -theme "minimal-fullscreen" -theme-str '* { font: "JetBrainsMono NF 20"; }')
 
 if [[ -n "$chosen" && -n "${actions[$chosen]}" ]]; then
   IFS='|' read -r workspace url <<<"${actions[$chosen]}"

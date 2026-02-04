@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 SCREENSHOT_DIR="$HOME/Screenshots"
-THEME="$HOME/.dotfiles/rofi/themes/image-grid-fullscreen.rasi"
 OVERRIDE_COLS='listview { lines: 4; columns: 4; }'
 
 chosen=$(
@@ -16,7 +15,7 @@ chosen=$(
     done |
     rofi -dmenu -show-icons -i -p "Open screenshot" \
       -theme-str "$OVERRIDE_COLS" \
-      -theme "$THEME"
+      -theme "image-grid-fullscreen"
 )
 
 [ -z "$chosen" ] && exit 0

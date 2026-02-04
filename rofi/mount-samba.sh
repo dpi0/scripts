@@ -15,39 +15,39 @@ notify_err() {
 # NOTE: the indentation here will affect the rofi text
 # WARNING: the choice text here must match the case choice
 CHOICE=$(printf \
-  "   Mount - 0x-media\n\
-   Mount - 0x-downloads\n\
-  Unmount - 0x-media\n\
-  Unmount - 0x-downloads" |
+  "   Mount - 0x-Library\n\
+   Mount - 0x-Downloads\n\
+  Unmount - 0x-Library\n\
+  Unmount - 0x-Downloads" |
   $ROFI)
 
 case "$CHOICE" in
-"   Mount - 0x-media")
-  if pkexec mount --mkdir -t cifs //10.0.0.10/hdd-Media /mnt/0x-media -o "$OPTS"; then
-    notify_ok "Mounted /mnt/0x-media"
+"   Mount - 0x-Library")
+  if pkexec mount --mkdir -t cifs "//10.0.0.10/0x3110 Library" /mnt/0x-Library -o "$OPTS"; then
+    notify_ok "Mounted /mnt/0x-Library"
   else
-    notify_err "Failed to mount /mnt/0x-media"
+    notify_err "Failed to mount /mnt/0x-Library"
   fi
   ;;
-"   Mount - 0x-downloads")
-  if pkexec mount --mkdir -t cifs //10.0.0.10/hdd-Downloads /mnt/0x-downloads -o "$OPTS"; then
-    notify_ok "Mounted /mnt/0x-downloads"
+"   Mount - 0x-Downloads")
+  if pkexec mount --mkdir -t cifs "//10.0.0.10/0x3110 Downloads" /mnt/0x-Downloads -o "$OPTS"; then
+    notify_ok "Mounted /mnt/0x-Downloads"
   else
-    notify_err "Failed to mount /mnt/0x-downloads"
+    notify_err "Failed to mount /mnt/0x-Downloads"
   fi
   ;;
-"  Unmount - 0x-media")
-  if pkexec umount /mnt/0x-media; then
-    notify_ok "Unmounted /mnt/0x-media"
+"  Unmount - 0x-Library")
+  if pkexec umount /mnt/0x-Library; then
+    notify_ok "Unmounted /mnt/0x-Library"
   else
-    notify_err "Failed to unmount /mnt/0x-media"
+    notify_err "Failed to unmount /mnt/0x-Library"
   fi
   ;;
-"  Unmount - 0x-downloads")
-  if pkexec umount /mnt/0x-downloads; then
-    notify_ok "Unmounted /mnt/0x-downloads"
+"  Unmount - 0x-Downloads")
+  if pkexec umount /mnt/0x-Downloads; then
+    notify_ok "Unmounted /mnt/0x-Downloads"
   else
-    notify_err "Failed to unmount /mnt/0x-downloads"
+    notify_err "Failed to unmount /mnt/0x-Downloads"
   fi
   ;;
 esac
