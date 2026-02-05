@@ -15,6 +15,19 @@ for arg in "$@"; do
 	esac
 done
 
+IFS=',' read -ra PLAYERS <<<"$player"
+
+resolve_player() {
+	for p in "${PLAYERS[@]}"; do
+		match=$(playerctl -l 2>/dev/null | grep -m1 "^$p")
+		[ -n "$match" ] && echo "$match" && return
+	done
+}
+
+resolved_player=$(resolve_player)
+[ -z "$resolved_player" ] && resolved_player="$player"
+player="$resolved_player"
+
 fmt_time() {
 	local total="$1"
 	[ -z "$total" ] && total=0
