@@ -9,7 +9,7 @@ VERSION=$(curl -fsSL https://api.github.com/repos/aristocratos/btop/releases/lat
 [ -n "$VERSION" ] || { echo "Failed to get version"; exit 1; }
 
 echo "Downloading and extracting..."
-curl -fsSL "https://github.com/aristocratos/btop/releases/download/$VERSION/btop-x86_64-linux-musl.tbz" | tar -xj
+curl -fsSL "https://github.com/aristocratos/btop/releases/download/$VERSION/btop-x86_64-unknown-linux-musl.tbz" | tar -xj
 
 echo "Installing..."
 install -m755 "btop/bin/btop" "$HOME/.local/bin/btop"
